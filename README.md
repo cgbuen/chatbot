@@ -20,16 +20,19 @@ following format:
     module.exports = {
       BOT_USER: '[your bot's twitch handle]',
       CHANNEL: '[your channel]',
+      GAME_ID: '[your gaming id of choice]'
       TWITCH_TOKEN: '[your twitch oauth token]',
-      SPOTIFY_TOKEN: '[your spotify account's oauth token]',
-      GAME_ID: '[your gaming id of choice, e.g. nintendo switch friend code]'
+      SPOTIFY_CLIENT_ID: '[your spotify app's client_id]',
+      SPOTIFY_CLIENT_SECRET: '[your spotify app's client_secret]',
     }
 
 ### Notes
 
 - `BOT_USER` can be the same handle you use for your channel.
+- `GAME_ID` example: Nintendo Switch Friend Code
 - `TWITCH_TOKEN` can be retrieved from [here](https://twitchapps.com/tmi/) (click the broken image button)
-- `SPOTIFY_TOKEN` can be retrieved from [here](https://developer.spotify.com/console/get-users-currently-playing-track/)
+- Register as a [Spotify Developer](https://developer.spotify.com/) to obtain a
+  `SPOTIFY_CLIENT_ID` and a `SPOTIFY_CLIENT_SECRET` for a test app.
 
 ## Run
 
