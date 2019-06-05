@@ -9,8 +9,6 @@ const { BOT_USER, CHANNEL, GAME_ID, TWITCH_TOKEN, SPOTIFY_CLIENT_ID } = require(
 const csrfGenerator = new csrf()
 const CSRF_SECRET = csrfGenerator.secretSync()
 const CSRF_TOKEN = csrfGenerator.create(CSRF_SECRET)
-console.log(CSRF_SECRET)
-console.log(CSRF_TOKEN)
 const MSG_BROKEN = 'chatbot/spotify integration is broken lmao'
 const MSG_NOT_PLAYING = 'i\'m not playing anything on spotify rn'
 const COUNT_RETRIES = 3
