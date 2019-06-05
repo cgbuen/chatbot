@@ -9,8 +9,6 @@ const { BOT_USER, CHANNEL, GAME_ID, TWITCH_TOKEN, SPOTIFY_CLIENT_ID } = require(
 const csrfGenerator = csrf()
 const CSRF_TOKEN = csrfGenerator.secretSync()
 
-console.log(CSRF_TOKEN)
-
 const app = express()
 const port = 3000
 
@@ -113,5 +111,5 @@ const query = {
   scope: 'user-read-currently-playing',
 }
 const url = `https://accounts.spotify.com/authorize?${qs.stringify(query)}`
-console.log('==> url', url)
+console.log('==> opening url', url)
 open(url)
