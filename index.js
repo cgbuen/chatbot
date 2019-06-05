@@ -3,7 +3,7 @@ const csrf = require('csrf')
 const twitch = require('twitch-js')
 const qs = require('qs')
 const open = require('open')
-const { requestSpotifyAuth, requestSpotifyRefresh, requestSpotifyCurrentlyPlaying } = require('./request-spotify')
+const requestSpotify = require('./request-spotify')
 const { BOT_USER, CHANNEL, GAME_ID, TWITCH_TOKEN, SPOTIFY_CLIENT_ID } = require('./vars')
 
 const csrfGenerator = csrf()
@@ -21,7 +21,7 @@ app.get('/callback', async (req, res) => {
 
   res.send('Authentication successful')
 
-  const spotifyTokenData = await requestSpotifyAuth(req.query.code)
+  const spotifyTokenData = await requestSpotify.auth(req.query.code)
   let accessToken = spotifyTokenData.access_token
   let refreshToken = spotifyTokenData.refresh_token
 
@@ -44,15 +44,24 @@ app.get('/callback', async (req, res) => {
   const client = new twitch.client(twitchOptions)
   client.connect()
 
-  const handleMessaging = async (currentlyPlayingData) => {
-    if (currentlyPlayingData && currentlyPlayingData.error && currentlyPlayingData.error.message && currentlyPlayingData.error.message.includes('xpire')) {
-      // if expired error, retry. need to terminate.
+  const handleMessaging = async (currentlyPlayingData, options) => {
+    // handle messaging based off of the currentlyPlayingData provided by
+    // spotify. could potentially call self recursively if access token expires.
+
+    if (!options.retries) {
+      // gone through too many refresh attempts, just tell the user it's broken
+      console.log('==> too many refresh attempts')
+      const msg = 'chatbot/spotify integration is broken lmao'
+      return client.action(CHANNEL, msg)
+
+    } else if (currentlyPlayingData && currentlyPlayingData.error && currentlyPlayingData.error.message && currentlyPlayingData.error.message.includes('xpire')) {
+      // if expired error, retry
       console.log('==> expiration error:', currentlyPlayingData.error.message, '- retrying')
-      const spotifyTokenDataUpdated = await requestSpotifyRefresh(refreshToken)
+      const spotifyTokenDataUpdated = await requestSpotify.refresh(refreshToken)
       accessToken = spotifyTokenDataUpdated.access_token // update access token
-      refreshToken = spotifyTokenDataUpdated.refresh_token || refreshToken // update refresh token _if available_
-      const spotifyCurrentlyPlayingData = await requestSpotifyCurrentlyPlaying(accessToken) // try again now that tokens are updated
-      return handleMessaging(spotifyCurrentlyPlayingData) // recursively call
+      refreshToken = spotifyTokenDataUpdated.refresh_token || refreshToken // update refresh token *if available*
+      const spotifyCurrentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken) // try again now that tokens are updated
+      return handleMessaging(spotifyCurrentlyPlayingData, { retries: options.retries - 1 }) // recursively call
 
     } else if (currentlyPlayingData && currentlyPlayingData.error) {
       // if other error, just tell the user it's broken
@@ -71,14 +80,14 @@ app.get('/callback', async (req, res) => {
 
     } else if (currentlyPlayingData) {
       // if not playing anything, tell user you're not
-      const msg = 'spotify\'s not playing anything rn'
-      console.log('==> spotify not playing anything; currentlyPlayingData:', currentlyPlayingData)
+      console.log('==> spotify not playing anything')
+      const msg = 'i\'m not playing anything on spotify rn'
       return client.action(CHANNEL, msg)
 
     } else {
       // if data wasn't ever even put into function, tell user it's broken
-      const msg = 'chatbot/spotify integration is broken lmao'
       console.log('==> there is no currentlyPlayingData')
+      const msg = 'chatbot/spotify integration is broken lmao'
       return client.action(CHANNEL, msg)
     }
   }
@@ -88,8 +97,8 @@ app.get('/callback', async (req, res) => {
       return client.action(CHANNEL, GAME_ID)
     }
     if (message === '!song') {
-      const spotifyCurrentlyPlayingData = await requestSpotifyCurrentlyPlaying(accessToken)
-      return handleMessaging(spotifyCurrentlyPlayingData)
+      const spotifyCurrentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken)
+      return handleMessaging(spotifyCurrentlyPlayingData, { retries: 3 })
     }
   })
 })

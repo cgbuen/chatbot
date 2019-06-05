@@ -2,7 +2,8 @@ const fetch = require('node-fetch')
 const qs = require('qs')
 const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } = require('./vars')
 
-const requestSpotifyAuth = async (authCode) => {
+const auth = async (authCode) => {
+  // initial authorization
   const spotifyOptionsAuth = {
     method: 'POST',
     headers: {
@@ -17,10 +18,12 @@ const requestSpotifyAuth = async (authCode) => {
     })
   }
   const spotifyResponseAuth = await fetch('https://accounts.spotify.com/api/token', spotifyOptionsAuth)
-  return await spotifyResponseAuth.json()
+  const data = await spotifyResponseAuth.json()
+  return data
 }
 
-const requestSpotifyRefresh = async (refreshToken) => {
+const refresh = async (refreshToken) => {
+  // refresh token for new access tokens
   const spotifyOptionsRefresh = {
     method: 'POST',
     headers: {
@@ -34,21 +37,24 @@ const requestSpotifyRefresh = async (refreshToken) => {
     })
   }
   const spotifyResponseRefresh = await fetch('https://accounts.spotify.com/api/token', spotifyOptionsRefresh)
-  return await spotifyResponseRefresh.json()
+  const data = await spotifyResponseRefresh.json()
+  return data
 }
 
-const requestSpotifyCurrentlyPlaying = async (accessToken) => {
+const currentlyPlaying = async (accessToken) => {
+  // actual api call for usable data
   const spotifyOptionsCurrentlyPlaying = {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
   }
   const spotifyResponseCurrentlyPlaying = await fetch('https://api.spotify.com/v1/me/player/currently-playing', spotifyOptionsCurrentlyPlaying)
-  return await spotifyResponseCurrentlyPlaying.json()
+  const data = await spotifyResponseCurrentlyPlaying.json()
+  return data
 }
 
 module.exports = {
-  requestSpotifyAuth,
-  requestSpotifyRefresh,
-  requestSpotifyCurrentlyPlaying
+  auth,
+  refresh,
+  currentlyPlaying
 }
