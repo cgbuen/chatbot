@@ -42,8 +42,7 @@ app.get('/callback', async (req, res) => {
 
   const handleMessaging = async (currentlyPlayingData, options) => {
     // handle messaging based off of the currentlyPlayingData provided by
-    // spotify. calls self recursively if access token expires (as per retry
-    // threshold specified in options object).
+    // spotify. calls self in the case that access token expires.
 
     if (!options.retries) {
       // if too many refresh attempts or attempts not specified, just tell the
@@ -52,7 +51,10 @@ app.get('/callback', async (req, res) => {
       return client.action(CHANNEL, MSG_BROKEN)
 
     } else if (currentlyPlayingData && currentlyPlayingData.error && currentlyPlayingData.error.message && currentlyPlayingData.error.message.includes('xpire')) {
-      // if expired error, retry
+      // if expired error, retry using refresh token. recursively call,
+      // terminated either by successful access token usage (leading to correct
+      // messaging outside of this condition) or by retry threshold (specified
+      // in options object).
       console.log(`==> Expiration error: ${currentlyPlayingData.error.message}. Retrying.`)
       const spotifyTokenDataUpdated = await requestSpotify.refresh(refreshToken)
       accessToken = spotifyTokenDataUpdated.access_token // update access token
