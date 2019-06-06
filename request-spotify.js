@@ -49,7 +49,14 @@ const currentlyPlaying = async (accessToken) => {
     }
   }
   const spotifyResponseCurrentlyPlaying = await fetch('https://api.spotify.com/v1/me/player/currently-playing', spotifyOptionsCurrentlyPlaying)
-  const data = await spotifyResponseCurrentlyPlaying.json()
+  let data
+  if (spotifyResponseCurrentlyPlaying.statusText === 'OK') {
+    data = await spotifyResponseCurrentlyPlaying.json()
+  } else {
+    // non-OK response seems to imply no active session, so fake a "not
+    // playing" response
+    data = { is_playing: false }
+  }
   return data
 }
 
