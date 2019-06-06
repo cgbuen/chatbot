@@ -17,8 +17,16 @@ const auth = async (authCode) => {
       client_secret: SPOTIFY_CLIENT_SECRET
     })
   }
-  const spotifyResponseAuth = await fetch('https://accounts.spotify.com/api/token', spotifyOptionsAuth)
-  const data = await spotifyResponseAuth.json()
+  let data
+  try {
+    const spotifyResponseAuth = await fetch('https://accounts.spotify.com/api/token', spotifyOptionsAuth)
+    data = await spotifyResponseAuth.json()
+  } catch (e) {
+    console.log('==> Request fetch error auth', e)
+    data = {
+      error: 'fetch error: auth'
+    }
+  }
   return data
 }
 
@@ -36,8 +44,16 @@ const refresh = async (refreshToken) => {
       client_secret: SPOTIFY_CLIENT_SECRET
     })
   }
-  const spotifyResponseRefresh = await fetch('https://accounts.spotify.com/api/token', spotifyOptionsRefresh)
-  const data = await spotifyResponseRefresh.json()
+  let data
+  try {
+    const spotifyResponseRefresh = await fetch('https://accounts.spotify.com/api/token', spotifyOptionsRefresh)
+    data = await spotifyResponseRefresh.json()
+  } catch(e) {
+    console.log('==> Request fetch error refresh', e)
+    data = {
+      error: 'fetch error: refresh'
+    }
+  }
   return data
 }
 
@@ -48,14 +64,21 @@ const currentlyPlaying = async (accessToken) => {
       Authorization: `Bearer ${accessToken}`
     }
   }
-  const spotifyResponseCurrentlyPlaying = await fetch('https://api.spotify.com/v1/me/player/currently-playing', spotifyOptionsCurrentlyPlaying)
   let data
-  if (spotifyResponseCurrentlyPlaying.statusText === 'OK') {
-    data = await spotifyResponseCurrentlyPlaying.json()
-  } else {
-    // non-OK response seems to imply no active session, so fake a "not
-    // playing" response
-    data = { is_playing: false }
+  try {
+    const spotifyResponseCurrentlyPlaying = await fetch('https://api.spotify.com/v1/me/player/currently-playing', spotifyOptionsCurrentlyPlaying)
+    if (spotifyResponseCurrentlyPlaying.statusText === 'OK') {
+      data = await spotifyResponseCurrentlyPlaying.json()
+    } else {
+      // non-OK response seems to imply no active session, so fake a "not
+      // playing" response
+      data = { is_playing: false, noSession: true }
+    }
+  } catch (e) {
+    console.log('==> Request fetch error currently playing', e)
+    data = {
+      error: 'fetch error: currently playing'
+    }
   }
   return data
 }

@@ -78,11 +78,12 @@ app.get('/callback', async (req, res) => {
 
     } else if (currentlyPlayingData) {
       // if not playing anything, tell user you're not playing anything
-      console.log('==> No song currently playing.')
+      console.log(`==> No song currently playing.${currentlyPlayingData.noSession ? ' (No current session.)' : ''}`)
       return client.action(CHANNEL, MSG_NOT_PLAYING)
 
     } else {
-      // if data wasn't ever even put into function, tell user it's broken
+      // fallback, e.g. if data wasn't ever even put into function, tell user
+      // it's broken
       console.log('==> currentlyPlayingData not provided.')
       return client.action(CHANNEL, MSG_BROKEN)
     }
