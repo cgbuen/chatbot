@@ -106,7 +106,7 @@ app.get('/callback', async (req, res) => {
       try {
         const userObj = await api.get('users', { search: { login: userInput } })
         if (userObj.total === 1) {
-          return chat.say(CHANNEL, `shouts out ${userInput}`)
+          return chat.say(CHANNEL, `shouts out ${userInput} https://twitch.tv/${userInput} ayyyy`)
         } else {
           return chat.say(CHANNEL, MSGS.INVALID_USER)
         }
