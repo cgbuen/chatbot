@@ -94,6 +94,9 @@ app.get('/callback', async (req, res) => {
   }
 
   chat.on('PRIVMSG/#cgbuen', async ({ message }) => {
+    if (['!chrissucks', '!chrissux'].includes(message)) {
+      return chat.say(CHANNEL, 'ya')
+    }
     if (message === '!fc') {
       return chat.say(CHANNEL, GAME_ID)
     }
