@@ -66,12 +66,17 @@ const currentlyPlaying = async (accessToken) => {
   }
   let data
   try {
-    const spotifyResponseCurrentlyPlaying = await fetch('https://api.spotify.com/v1/me/player/currently-playing', spotifyOptionsCurrentlyPlaying)
+    const spotifyResponseCurrentlyPlaying = await fetch('https://api.spotify.com/v1/me/player', spotifyOptionsCurrentlyPlaying)
     if (spotifyResponseCurrentlyPlaying.statusText === 'OK') {
+      console.log('** OK currently playing response data')
+      data = await spotifyResponseCurrentlyPlaying.json()
+    } else if (spotifyResponseCurrentlyPlaying.statusText === 'Unauthorized') {
+      console.log('** Unauthorized currently playing response data')
       data = await spotifyResponseCurrentlyPlaying.json()
     } else {
-      // non-OK response seems to imply no active session, so fake a "not
+      // other non-OK response seems to imply no active session, so fake a "not
       // playing" response
+      console.log('** non-OK currently playing response:', spotifyResponseCurrentlyPlaying)
       data = { is_playing: false, noSession: true }
     }
   } catch (e) {
@@ -83,8 +88,37 @@ const currentlyPlaying = async (accessToken) => {
   return data
 }
 
+const devices = async (accessToken) => {
+  // actual api call for usable data
+  const spotifyOptionsCurrentlyPlaying = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  }
+  let data
+  try {
+    const spotifyResponseCurrentlyPlaying = await fetch('https://api.spotify.com/v1/me/player/devices', spotifyOptionsCurrentlyPlaying)
+    if (spotifyResponseCurrentlyPlaying.statusText === 'OK') {
+      data = await spotifyResponseCurrentlyPlaying.json()
+      console.log('** OK device response data')
+    } else {
+      // non-OK response seems to imply no active session, so fake a "not
+      // playing" response
+      console.log('** non-OK device response:', spotifyResponseCurrentlyPlaying)
+      data = []
+    }
+  } catch (e) {
+    console.log('==> Request fetch error currently playing', e)
+    data = {
+      error: 'fetch error: devices'
+    }
+  }
+  return data
+}
+
 module.exports = {
   auth,
   refresh,
-  currentlyPlaying
+  currentlyPlaying,
+  devices
 }
