@@ -1,3 +1,5 @@
+const fs = require('fs')
+const moment = require('moment')
 const express = require('express')
 const Csrf = require('csrf')
 const TwitchJs = require('twitch-js').default
@@ -23,6 +25,15 @@ const TWITCH_OPTIONS = {
 
 const app = express()
 const port = 3000
+
+
+const dateString = moment().format('YYYY-MM-DD_HH-mm-ss')
+const dateFilename = __dirname + `/../../twitch-logs/${dateString}.txt`
+fs.writeFileSync(dateFilename, `${dateString}\n\n`)
+
+const botLog = msg => {
+  return fs.appendFileSync(dateFilename, `<BOT_${BOT_USER}> ${msg}\n`)
+}
 
 app.get('/callback', async (req, res) => {
   if (!csrfGenerator.verify(CSRF_SECRET, req.query.state)) {
@@ -51,6 +62,7 @@ app.get('/callback', async (req, res) => {
       // if too many refresh attempts or attempts not specified, just tell the
       // user it's broken
       console.log('==> Too many refresh attempts.')
+      botLog(MSGS.BROKEN_SPOTIFY)
       return chat.say(CHANNEL, MSGS.BROKEN_SPOTIFY)
 
     } else if (currentlyPlayingData && currentlyPlayingData.error && currentlyPlayingData.error.message && currentlyPlayingData.error.message.includes('xpire')) {
@@ -68,6 +80,7 @@ app.get('/callback', async (req, res) => {
     } else if (currentlyPlayingData && currentlyPlayingData.error) {
       // if other error, just tell the user it's broken
       console.log(`==> Miscellaneous error: ${currentlyPlayingData.error}`)
+      botLog(MSGS.BROKEN_SPOTIFY)
       return chat.say(CHANNEL, MSGS.BROKEN_SPOTIFY)
 
     } else if (currentlyPlayingData && currentlyPlayingData.is_playing && currentlyPlayingData.item && currentlyPlayingData.device) {
@@ -78,50 +91,70 @@ app.get('/callback', async (req, res) => {
       const album = (currentlyPlayingData.item.album && currentlyPlayingData.item.album.name) || 'n/a'
       // const device = currentlyPlayingData.device.name
       const msg = `${artists} - ${title} [${album}]`
+      botLog(msg)
       return chat.say(CHANNEL, msg)
 
     } else if (currentlyPlayingData) {
       // if not playing anything, tell user you're not playing anything
       console.log(`==> No song currently playing.${currentlyPlayingData.noSession ? ' (No current session.)' : ''}`)
+      botLog(MSGS.NOT_PLAYING)
       return chat.say(CHANNEL, MSGS.NOT_PLAYING)
 
     } else {
       // fallback, e.g. if data wasn't ever even put into function, tell user
       // it's broken
       console.log('==> currentlyPlayingData not provided.')
+      botLog(MSGS.BROKEN_SPOTIFY)
       return chat.say(CHANNEL, MSGS.BROKEN_SPOTIFY)
     }
   }
 
-  chat.on('PRIVMSG/#cgbuen', async ({ message }) => {
-    if (['!chrissucks', '!chrissux'].includes(message)) {
-      return chat.say(CHANNEL, 'ya')
-    }
-    if (message === '!fc') {
-      return chat.say(CHANNEL, GAME_ID)
-    }
-    if (message === '!song') {
-      const spotifyCurrentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken)
-      return handleMessaging(spotifyCurrentlyPlayingData, { retries: COUNT_RETRIES })
-    }
-    if (/^\!so\s[\w]+$/.test(message)) {
-      const userInput = message.match(/^\!so\s([\w]+)$/)[1]
-      try {
-        const userObj = await api.get('users', { search: { login: userInput } })
-        if (userObj.total === 1) {
-          return chat.say(CHANNEL, `shouts out ${userInput} https://twitch.tv/${userInput} ayyyy`)
-        } else {
-          return chat.say(CHANNEL, MSGS.INVALID_USER)
+  chat.on('*', async (msg) => {
+    const { command, message, username, channel } = msg
+    if (channel === `#${CHANNEL}`) {
+      if (command === 'PRIVMSG') {
+        fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
+        if (['!chrissucks', '!chrissux'].includes(message)) {
+          const msg = 'ya'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
         }
-      } catch (e) {
-        console.log('==> Request fetch error api user', e)
-        return chat.say(CHANNEL, MSGS.BROKEN_SHOUT)
+        if (message === '!fc') {
+          botLog(GAME_ID)
+          return chat.say(CHANNEL, GAME_ID)
+        }
+        if (message === '!song') {
+          const spotifyCurrentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken)
+          return handleMessaging(spotifyCurrentlyPlayingData, { retries: COUNT_RETRIES })
+        }
+        if (/^\!so\s[\w]+$/.test(message)) {
+          const userInput = message.match(/^\!so\s([\w]+)$/)[1]
+          try {
+            const userObj = await api.get('users', { search: { login: userInput } })
+            if (userObj.total === 1) {
+              const msg = `shouts out ${userInput} https://twitch.tv/${userInput} ayyyy`
+              botLog(msg)
+              return chat.say(CHANNEL, msg)
+            } else {
+              botLog(MSGS.INVALID_USER)
+              return chat.say(CHANNEL, MSGS.INVALID_USER)
+            }
+          } catch (e) {
+            console.log('==> Request fetch error api user', e)
+            botLog(MSGS.BROKEN_SHOUT)
+            return chat.say(CHANNEL, MSGS.BROKEN_SHOUT)
+          }
+        }
+        if (message === '!devices') {
+          const spotifyDeviceData = await requestSpotify.devices(accessToken)
+          const msg = spotifyDeviceData.devices.map(device => `${device.name} (${device.type})`).join(', ') || 'no devices'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
+      } else if (!['PONG', 'USERSTATE', 'GLOBALUSERSTATE'].includes(command)) {
+        // joins, parts, etc.
+        fs.appendFileSync(dateFilename, `==> ${command} ${username} ${message || ''}\n`)
       }
-    }
-    if (message === '!devices') {
-      const spotifyDeviceData = await requestSpotify.devices(accessToken)
-      const deviceMsg = spotifyDeviceData.devices.map(device => `${device.name} (${device.type})`).join(', ') || 'no devices'
-      return chat.say(CHANNEL, deviceMsg)
     }
   })
 })
