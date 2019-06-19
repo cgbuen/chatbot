@@ -27,8 +27,12 @@ const app = express()
 const port = 3000
 
 
+const dir = './twitch-logs'
 const dateString = moment().format('YYYY-MM-DD_HH-mm-ss')
-const dateFilename = __dirname + `/../../twitch-logs/${dateString}.txt`
+const dateFilename = `${dir}/${dateString}.txt`
+if (!fs.existsSync(dir)) {
+  fs.mkdirSync(dir)
+}
 fs.writeFileSync(dateFilename, `${dateString}\n\n`)
 
 const botLog = msg => {
