@@ -118,7 +118,7 @@ app.get('/callback', async (req, res) => {
     if (channel === `#${CHANNEL}`) {
       if (command === 'PRIVMSG') {
         fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
-        if (['!chrissucks', '!chrissux'].includes(message)) {
+        if (['!chrissucks', '!chrissux', '!chrisucks', '!chrisux', '!chris_sucks', '!chris_sux'].includes(message)) {
           const msg = 'ya'
           botLog(msg)
           return chat.say(CHANNEL, msg)
@@ -131,8 +131,8 @@ app.get('/callback', async (req, res) => {
           const spotifyCurrentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken)
           return handleMessaging(spotifyCurrentlyPlayingData, { retries: COUNT_RETRIES })
         }
-        if (/^\!so\s[\w]+$/.test(message)) {
-          const userInput = message.match(/^\!so\s([\w]+)$/)[1]
+        if (/^\!so\s[\w]+(\s|$)/.test(message)) {
+          const userInput = message.match(/^\!so\s([\w]+)(\s|$)/)[1]
           try {
             const userObj = await api.get('users', { search: { login: userInput } })
             if (userObj.total === 1) {
@@ -148,6 +148,11 @@ app.get('/callback', async (req, res) => {
             botLog(MSGS.BROKEN_SHOUT)
             return chat.say(CHANNEL, MSGS.BROKEN_SHOUT)
           }
+        }
+        if (message === '!commands') {
+          const msg = '!commands / !fc / !song / !so [user] / !chrissucks, more info in the channel note panels below'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
         }
         if (message === '!devices') {
           const spotifyDeviceData = await requestSpotify.devices(accessToken)
