@@ -6,7 +6,7 @@ const TwitchJs = require('twitch-js').default
 const qs = require('qs')
 const open = require('open')
 const requestSpotify = require('./request-spotify')
-const { BOT_USER, CHANNEL, GAME_ID, TWITCH_TOKEN, SPOTIFY_CLIENT_ID } = require('./vars')
+const { BOT_USER, CHANNEL, GAME_ID, TWITCH_TOKEN, SPOTIFY_CLIENT_ID, DISCORD } = require('./vars')
 
 const csrfGenerator = new Csrf()
 const CSRF_SECRET = csrfGenerator.secretSync()
@@ -127,6 +127,11 @@ app.get('/callback', async (req, res) => {
           botLog(GAME_ID)
           return chat.say(CHANNEL, GAME_ID)
         }
+        if (message === '!discord') {
+          const msg = `join the discord for clips, vc, etc.: ${DISCORD}`
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
         if (message === '!song') {
           const spotifyCurrentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken)
           return handleMessaging(spotifyCurrentlyPlayingData, { retries: COUNT_RETRIES })
@@ -150,7 +155,7 @@ app.get('/callback', async (req, res) => {
           }
         }
         if (message === '!commands') {
-          const msg = '!commands / !fc / !song / !so [user] / !chrissucks, more info in the channel note panels below'
+          const msg = '!commands / !fc / !discord / !so [user] / !song / !chrissucks, more info in the channel note panels below'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
