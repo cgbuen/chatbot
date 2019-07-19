@@ -132,6 +132,11 @@ app.get('/callback', async (req, res) => {
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
+        if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
+          const msg = 'pro controller, motion 4.0, R stick 0'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
         if (message === '!song') {
           const spotifyCurrentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken)
           return handleMessaging(spotifyCurrentlyPlayingData, { retries: COUNT_RETRIES })
@@ -155,7 +160,7 @@ app.get('/callback', async (req, res) => {
           }
         }
         if (message === '!commands') {
-          const msg = '!commands / !fc / !discord / !so [user] / !song / !chrissucks, more info in the channel note panels below'
+          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks, more info in the channel note panels below'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
