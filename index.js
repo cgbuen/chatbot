@@ -6,7 +6,7 @@ const TwitchJs = require('twitch-js').default
 const qs = require('qs')
 const open = require('open')
 const requestSpotify = require('./request-spotify')
-const { BOT_USER, CHANNEL, GAME_ID, TWITCH_TOKEN, SPOTIFY_CLIENT_ID } = require('./vars')
+const { BOT_USER, CHANNEL, GAME_ID, TWITCH_TOKEN, SPOTIFY_CLIENT_ID, DISCORD } = require('./vars')
 
 const csrfGenerator = new Csrf()
 const CSRF_SECRET = csrfGenerator.secretSync()
@@ -118,7 +118,7 @@ app.get('/callback', async (req, res) => {
     if (channel === `#${CHANNEL}`) {
       if (command === 'PRIVMSG') {
         fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
-        if (['!chrissucks', '!chrissux'].includes(message)) {
+        if (['!chrissucks', '!chrissux', '!chrisucks', '!chrisux', '!chris_sucks', '!chris_sux'].includes(message)) {
           const msg = 'ya'
           botLog(msg)
           return chat.say(CHANNEL, msg)
@@ -127,12 +127,22 @@ app.get('/callback', async (req, res) => {
           botLog(GAME_ID)
           return chat.say(CHANNEL, GAME_ID)
         }
+        if (message === '!discord') {
+          const msg = `join the discord for clips, vc, etc.: ${DISCORD}`
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
+        if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
+          const msg = 'pro controller, motion 4.0, R stick 0'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
         if (message === '!song') {
           const spotifyCurrentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken)
           return handleMessaging(spotifyCurrentlyPlayingData, { retries: COUNT_RETRIES })
         }
-        if (/^\!so\s[\w]+$/.test(message)) {
-          const userInput = message.match(/^\!so\s([\w]+)$/)[1]
+        if (/^\!(so|shoutout)\s[\w]+(\s|$)/.test(message)) {
+          const userInput = message.match(/^\!(so|shoutout)\s([\w]+)(\s|$)/)[2]
           try {
             const userObj = await api.get('users', { search: { login: userInput } })
             if (userObj.total === 1) {
@@ -148,6 +158,11 @@ app.get('/callback', async (req, res) => {
             botLog(MSGS.BROKEN_SHOUT)
             return chat.say(CHANNEL, MSGS.BROKEN_SHOUT)
           }
+        }
+        if (message === '!commands') {
+          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks, more info in the channel note panels below'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
         }
         if (message === '!devices') {
           const spotifyDeviceData = await requestSpotify.devices(accessToken)
