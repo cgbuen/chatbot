@@ -141,8 +141,8 @@ app.get('/callback', async (req, res) => {
           const spotifyCurrentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken)
           return handleMessaging(spotifyCurrentlyPlayingData, { retries: COUNT_RETRIES })
         }
-        if (/^\!(so|shoutout)\s[\w]+(\s|$)/.test(message)) {
-          const userInput = message.match(/^\!(so|shoutout)\s([\w]+)(\s|$)/)[2]
+        if (/^\!(so|shoutout)\s@?[\w]+(\s|$)/.test(message)) {
+          const userInput = message.match(/^\!(so|shoutout)\s@?([\w]+)(\s|$)/)[2]
           try {
             const userObj = await api.get('users', { search: { login: userInput } })
             if (userObj.total === 1) {
