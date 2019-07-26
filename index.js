@@ -126,6 +126,7 @@ app.get('/callback', async (req, res) => {
       if (command === 'PRIVMSG') {
         fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
         if (['!chrissucks', '!chrissux', '!chrisucks', '!chrisux', '!chris_sucks', '!chris_sux'].includes(message)) {
+          // send back simple message while recording a score to a file
           const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
           if (dict[username]) {
             dict[username]++
@@ -138,6 +139,7 @@ app.get('/callback', async (req, res) => {
           return chat.say(CHANNEL, msg)
         }
         if (message === '!rank') {
+          // retrieve score data, analyze, and spit back out into a message
           const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
           const userCount = dict[username] || 0
           let totalCount = 0
