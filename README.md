@@ -42,7 +42,8 @@ following format:
       TWITCH_TOKEN: '[your twitch oauth token]',
       SPOTIFY_CLIENT_ID: '[your spotify app's client_id]',
       SPOTIFY_CLIENT_SECRET: '[your spotify app's client_secret]',
-      DISCORD: '[link to your discord server]'
+      DISCORD: '[link to your discord server]',
+      COUNTER: '[extension-less filename for JSON counter file]'
     }
 
 ### Notes
