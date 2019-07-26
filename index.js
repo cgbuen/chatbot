@@ -26,13 +26,14 @@ const TWITCH_OPTIONS = {
 const app = express()
 const port = 3000
 
-
 const logDir = './twitch-logs'
 const dateString = moment().format('YYYY-MM-DD_HH-mm-ss')
 const dateFilename = `${logDir}/${dateString}.txt`
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir)
 }
+fs.writeFileSync(dateFilename, `${dateString}\n\n`)
+
 const counterDir = './counter'
 if (!fs.existsSync(counterDir)) {
   fs.mkdirSync(counterDir)
@@ -40,7 +41,6 @@ if (!fs.existsSync(counterDir)) {
 if (!fs.existsSync(`${counterDir}/${COUNTER}.json`)) {
   fs.writeFileSync(`${counterDir}/${COUNTER}.json`, '{}')
 }
-fs.writeFileSync(dateFilename, `${dateString}\n\n`)
 
 const botLog = msg => {
   return fs.appendFileSync(dateFilename, `<BOT_${BOT_USER}> ${msg}\n`)
