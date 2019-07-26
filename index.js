@@ -212,7 +212,7 @@ app.get('/callback', async (req, res) => {
           }
         }
         if (message === '!commands') {
-          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks, more info in the channel note panels below'
+          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks / !rank, more info in the channel note panels below'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
