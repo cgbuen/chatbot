@@ -126,7 +126,7 @@ app.get('/callback', async (req, res) => {
       if (command === 'PRIVMSG') {
         fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
         if (['!chrissucks', '!chrissux', '!chrisucks', '!chrisux', '!chris_sucks', '!chris_sux'].includes(message)) {
-          // send back simple message while recording a score to a file
+          // !chrissucks: send simple message while recording a score to a file
           const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
           if (dict[username]) {
             dict[username]++
@@ -139,7 +139,7 @@ app.get('/callback', async (req, res) => {
           return chat.say(CHANNEL, msg)
         }
         if (message === '!rank') {
-          // retrieve score data, analyze, and spit back out into a message
+          // !rank: retrieve score data, analyze, and spit back out into message
           const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
           const userCount = dict[username] || 0
           let totalCount = 0
@@ -163,17 +163,25 @@ app.get('/callback', async (req, res) => {
             }
           }
 
-          const usersAhead = countRanks.slice(parseInt(userCount) + 1) // break out array of people ahead of curr user
-          const rank = usersAhead.filter(x => x).reduce((acc, cv) => acc + cv, 0) + 1 // determine rank by adding 1 to the sum of values in usersAhead array
+          // break out the array of people ahead of the current user. note that
+          // the identity filter (x => x) removes the `undefined`s
+          const usersAhead = countRanks.slice(parseInt(userCount) + 1).filter(x => x)
+
+          // determine rank by adding 1 to the sum of values in usersAhead array
+          const rank = usersAhead.reduce((acc, cv) => acc + cv, 0) + 1
+
+          // determine the full rank message
           const isTied = countRanks[parseInt(userCount)] > 1
           const numberTiedWith = isTied && (countRanks[parseInt(userCount)] - 1)
           const tiedMsg = isTied ? ` (tied with ${numberTiedWith} other${numberTiedWith !== 1 ? 's' : ''})` : ''
           const rankMsg = userCount === 0 ? 'n/a' : `${rank}${tiedMsg}`
+
           const msg = `
             ${username} !chrissucks score: ${userCount}.
             rank: ${rankMsg}.
             total times i've been told i suck: ${totalCount}.
           `.replace(/\s+/gm, ' ') // allows for formatting above, but should be output with no newlines
+
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
