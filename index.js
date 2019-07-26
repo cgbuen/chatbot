@@ -37,8 +37,8 @@ const counterDir = './counter'
 if (!fs.existsSync(counterDir)) {
   fs.mkdirSync(counterDir)
 }
-if (!fs.existsSync(`${counterDir}/${COUNTER}`)) {
-  fs.writeFileSync(`${counterDir}/${COUNTER}`, '{}')
+if (!fs.existsSync(`${counterDir}/${COUNTER}.json`)) {
+  fs.writeFileSync(`${counterDir}/${COUNTER}.json`, '{}')
 }
 fs.writeFileSync(dateFilename, `${dateString}\n\n`)
 
@@ -126,19 +126,19 @@ app.get('/callback', async (req, res) => {
       if (command === 'PRIVMSG') {
         fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
         if (['!chrissucks', '!chrissux', '!chrisucks', '!chrisux', '!chris_sucks', '!chris_sux'].includes(message)) {
-          const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}`))
+          const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
           if (dict[username]) {
             dict[username]++
           } else {
             dict[username] = 1
           }
           const msg = 'ya'
-          fs.writeFileSync(`${counterDir}/${COUNTER}`, JSON.stringify(dict))
+          fs.writeFileSync(`${counterDir}/${COUNTER}.json`, JSON.stringify(dict))
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
         if (message === '!rank') {
-          const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}`))
+          const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
           const userCount = dict[username] || 0
           let totalCount = 0
 
