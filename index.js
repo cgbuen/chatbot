@@ -157,9 +157,7 @@ app.get('/callback', async (req, res) => {
               } else {
                 countRanks[count] = 1
               }
-              if (count) {
-                totalCount = totalCount + count
-              }
+              totalCount = totalCount + count
             }
           }
 
