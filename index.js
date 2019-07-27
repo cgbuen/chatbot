@@ -165,7 +165,7 @@ app.get('/callback', async (req, res) => {
           return chat.say(CHANNEL, msg)
         }
         if (message === '!commands') {
-          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks / !donate, more info in the channel note panels below'
+          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks / !charity, more info in the channel note panels below'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
