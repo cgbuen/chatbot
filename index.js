@@ -159,13 +159,13 @@ app.get('/callback', async (req, res) => {
             return chat.say(CHANNEL, MSGS.BROKEN_SHOUT)
           }
         }
-        if (['!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
+        if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
           const msg = 'All proceeds go to the San Francisco-Marin Food Bank. You can donate directly here: https://us-p2p.netdonor.net/1803/general/61375/cgbuen'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
         if (message === '!commands') {
-          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks / !donate, more info in the channel note panels below'
+          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks / !charity, more info in the channel note panels below'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
