@@ -201,8 +201,8 @@ app.get('/callback', async (req, res) => {
           const spotifyCurrentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken)
           return handleMessaging(spotifyCurrentlyPlayingData, { retries: COUNT_RETRIES })
         }
-        if (/^\!(so|shoutout)\s[\w]+(\s|$)/.test(message)) {
-          const userInput = message.match(/^\!(so|shoutout)\s([\w]+)(\s|$)/)[2]
+        if (/^\!(so|shoutout)\s@?[\w]+(\s|$)/.test(message)) {
+          const userInput = message.match(/^\!(so|shoutout)\s@?([\w]+)(\s|$)/)[2]
           try {
             const userObj = await api.get('users', { search: { login: userInput } })
             if (userObj.total === 1) {
@@ -219,8 +219,13 @@ app.get('/callback', async (req, res) => {
             return chat.say(CHANNEL, MSGS.BROKEN_SHOUT)
           }
         }
+        if (['!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
+          const msg = 'All proceeds go to the San Francisco-Marin Food Bank. You can donate directly here: https://us-p2p.netdonor.net/1803/general/61375/cgbuen'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
         if (message === '!commands') {
-          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks / !rank, more info in the channel note panels below'
+          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks / !donate / !rank, more info in the channel note panels below'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
