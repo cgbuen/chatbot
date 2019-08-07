@@ -125,7 +125,7 @@ app.get('/callback', async (req, res) => {
     if (channel === `#${CHANNEL}`) {
       if (command === 'PRIVMSG') {
         fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
-        if (['!chrissucks', '!chrissux', '!chrisucks', '!chrisux', '!chris_sucks', '!chris_sux'].includes(message)) {
+        if (/^\!(chri(s|d)?_?s?u(c|k|x))/.test(message)) {
           // !chrissucks: send simple message while recording a score to a file
           const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
           if (dict[username]) {
