@@ -224,6 +224,11 @@ app.get('/callback', async (req, res) => {
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
+        if (message === '!hype') {
+          const msg = 'yeeeeeaaaaaa boiiiiiii let\'s crack this rank meter'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
         if (message === '!lurk') {
           const msg = 'thx for lurkin my dude'
           botLog(msg)
