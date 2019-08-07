@@ -6,7 +6,7 @@ const TwitchJs = require('twitch-js').default
 const qs = require('qs')
 const open = require('open')
 const requestSpotify = require('./request-spotify')
-const { BOT_USER, CHANNEL, GAME_ID, TWITCH_TOKEN, SPOTIFY_CLIENT_ID, DISCORD } = require('./vars')
+const { BOT_USER, CHANNEL, GAME_ID, TWITCH_TOKEN, SPOTIFY_CLIENT_ID, DISCORD, COUNTER } = require('./vars')
 
 const csrfGenerator = new Csrf()
 const CSRF_SECRET = csrfGenerator.secretSync()
@@ -26,14 +26,21 @@ const TWITCH_OPTIONS = {
 const app = express()
 const port = 3000
 
-
-const dir = './twitch-logs'
+const logDir = './twitch-logs'
 const dateString = moment().format('YYYY-MM-DD_HH-mm-ss')
-const dateFilename = `${dir}/${dateString}.txt`
-if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir)
+const dateFilename = `${logDir}/${dateString}.txt`
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir)
 }
 fs.writeFileSync(dateFilename, `${dateString}\n\n`)
+
+const counterDir = './counter'
+if (!fs.existsSync(counterDir)) {
+  fs.mkdirSync(counterDir)
+}
+if (!fs.existsSync(`${counterDir}/${COUNTER}.json`)) {
+  fs.writeFileSync(`${counterDir}/${COUNTER}.json`, '{}')
+}
 
 const botLog = msg => {
   return fs.appendFileSync(dateFilename, `<BOT_${BOT_USER}> ${msg}\n`)
@@ -119,7 +126,60 @@ app.get('/callback', async (req, res) => {
       if (command === 'PRIVMSG') {
         fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
         if (['!chrissucks', '!chrissux', '!chrisucks', '!chrisux', '!chris_sucks', '!chris_sux'].includes(message)) {
+          // !chrissucks: send simple message while recording a score to a file
+          const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
+          if (dict[username]) {
+            dict[username]++
+          } else {
+            dict[username] = 1
+          }
           const msg = 'ya'
+          fs.writeFileSync(`${counterDir}/${COUNTER}.json`, JSON.stringify(dict))
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
+        if (message === '!rank') {
+          // !rank: retrieve score data, analyze, and spit back out into message
+          const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
+          const userCount = dict[username] || 0
+          let totalCount = 0
+
+          // create ranks array, where indices may be undefined, e.g.
+          // [undefined, 3, 3, 1, undefined, undefined, undefined, undefined, 1]
+          // indices correspond to how many people have done this that many
+          // times
+          const countRanks = []
+          for (let key in dict) {
+            if (dict.hasOwnProperty(key)) {
+              const count = parseInt(dict[key])
+              if (countRanks[count]) {
+                countRanks[count]++
+              } else {
+                countRanks[count] = 1
+              }
+              totalCount = totalCount + count
+            }
+          }
+
+          // break out the array of people ahead of the current user. note that
+          // the identity filter (x => x) removes the `undefined`s
+          const usersAhead = countRanks.slice(parseInt(userCount) + 1).filter(x => x)
+
+          // determine rank by adding 1 to the sum of values in usersAhead array
+          const rank = usersAhead.reduce((acc, cv) => acc + cv, 0) + 1
+
+          // determine the full rank message
+          const isTied = countRanks[parseInt(userCount)] > 1
+          const numberTiedWith = isTied && (countRanks[parseInt(userCount)] - 1)
+          const tiedMsg = isTied ? ` (tied with ${numberTiedWith} other${numberTiedWith !== 1 ? 's' : ''})` : ''
+          const rankMsg = userCount === 0 ? 'n/a' : `${rank}${tiedMsg}`
+
+          const msg = `
+            ${username} !chrissucks score: ${userCount}.
+            rank: ${rankMsg}.
+            total times i've been told i suck: ${totalCount}.
+          `.replace(/\s+/gm, ' ') // allows for formatting above, but should be output with no newlines
+
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
@@ -165,7 +225,7 @@ app.get('/callback', async (req, res) => {
           return chat.say(CHANNEL, msg)
         }
         if (message === '!commands') {
-          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !chrissucks / !charity, more info in the channel note panels below'
+          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !charity / !chrissucks / !rank, more info in the channel note panels below'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }

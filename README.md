@@ -1,8 +1,8 @@
 # My Twitch Chatbot
 
 My locally-running Twitch chatbot for some simple commands, including ID
-display, currently-playing Spotify song, and shoutouts with real-user checking.
-It also logs chat.
+display, currently-playing Spotify song, shoutouts with real-user checking, and
+a fun leaderboard chat game. It also records logs.
 
 Good for not having to depend on your own machine's Spotify desktop application,
 but instead Spotify's API data that they have on you.
@@ -42,7 +42,8 @@ following format:
       TWITCH_TOKEN: '[your twitch oauth token]',
       SPOTIFY_CLIENT_ID: '[your spotify app's client_id]',
       SPOTIFY_CLIENT_SECRET: '[your spotify app's client_secret]',
-      DISCORD: '[link to your discord server]'
+      DISCORD: '[link to your discord server]',
+      COUNTER: '[extension-less filename for JSON counter file]'
     }
 
 ### Notes
