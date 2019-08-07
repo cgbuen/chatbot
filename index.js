@@ -224,8 +224,13 @@ app.get('/callback', async (req, res) => {
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
+        if (message === '!lurk') {
+          const msg = 'thx for lurkin my dude'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
         if (message === '!commands') {
-          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !charity / !chrissucks / !rank, more info in the channel note panels below'
+          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !charity / !lurk / !chrissucks / !rank, more info in the channel note panels below'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
