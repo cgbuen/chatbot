@@ -125,7 +125,7 @@ app.get('/callback', async (req, res) => {
     if (channel === `#${CHANNEL}`) {
       if (command === 'PRIVMSG') {
         fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
-        if (['!chrissucks', '!chrissux', '!chrisucks', '!chrisux', '!chris_sucks', '!chris_sux'].includes(message)) {
+        if (/^\!(chri(s|d)?_?s?u(c|k|x)|rekt)/.test(message)) {
           // !chrissucks: send simple message while recording a score to a file
           const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
           if (dict[username]) {
@@ -224,8 +224,18 @@ app.get('/callback', async (req, res) => {
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
+        if (message === '!hype') {
+          const msg = 'yeeeeeaaaaaa boiiiiiii let\'s crack this rank meter'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
+        if (message === '!lurk') {
+          const msg = 'thx for lurkin my dude'
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
         if (message === '!commands') {
-          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !charity / !chrissucks / !rank, more info in the channel note panels below'
+          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !charity / !lurk / !chrissucks / !rank, more info in the channel note panels below'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
