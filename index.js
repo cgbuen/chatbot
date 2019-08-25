@@ -27,7 +27,8 @@ const app = express()
 const port = 3000
 
 const logDir = './twitch-logs'
-const dateString = moment().format('YYYY-MM-DD_HH-mm-ss')
+const startTime = moment()
+const dateString = startTime.format('YYYY-MM-DD_HH-mm-ss')
 const dateFilename = `${logDir}/${dateString}.txt`
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir)
@@ -234,8 +235,20 @@ app.get('/callback', async (req, res) => {
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
+        if (message.startsWith('!up')) {
+          const currTime = moment()
+          const duration = moment.duration(currTime.diff(startTime))
+          let time = `${duration.get('minutes')}m ${duration.get('seconds')}s`
+          const hours = Math.floor(duration.as('hours'))
+          if (hours) {
+            time = `${hours}h ${time}`
+          }
+          const msg = `stream up for ${time}`
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
         if (message === '!commands') {
-          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !charity / !lurk / !chrissucks / !rank, more info in the channel note panels below'
+          const msg = '!commands / !fc / !discord / !controls / !so [user] / !song / !charity / !lurk / !uptime / !chrissucks / !rank, more info in the channel note panels below'
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
