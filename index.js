@@ -47,6 +47,17 @@ const botLog = msg => {
   return fs.appendFileSync(dateFilename, `<BOT_${BOT_USER}> ${msg}\n`)
 }
 
+const bitPrefixes = ['xyz', 'abc']
+const bitRegExp = new RegExp(`((${bitPrefixes.join('|')})(\\d+))`, 'g')
+const getAmount = msg => {
+  let amount = 0
+  const matcher = msg.match(bitRegExp)
+  for (let i = 0; i < matcher.length; i++) {
+    amount += parseInt(matcher[i].match(new RegExp(bitRegExp.source))[3])
+  }
+  return amount
+}
+
 app.get('/callback', async (req, res) => {
   if (!csrfGenerator.verify(CSRF_SECRET, req.query.state)) {
     // spotify recommends the use of the state parameter for CSRF protection.
@@ -129,10 +140,15 @@ app.get('/callback', async (req, res) => {
         if (/^\!(chri(s|d)?_?s?u(c|k|x)|rekt)/.test(message)) {
           // !chrissucks: send simple message while recording a score to a file
           const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
-          if (dict[username]) {
-            dict[username]++
+          if (dict[username] && dict[username].chrissucks) {
+            dict[username].chrissucks++
+          } else if (dict[username]) {
+            dict[username].chrissucks = 1
           } else {
-            dict[username] = 1
+            dict[username] = {
+              name: username,
+              chrissucks: 1
+            }
           }
           const msg = 'ya'
           fs.writeFileSync(`${counterDir}/${COUNTER}.json`, JSON.stringify(dict))
@@ -258,16 +274,31 @@ app.get('/callback', async (req, res) => {
           botLog(msg)
           return chat.say(CHANNEL, msg)
         }
+        if (bitRegExp.test(message)) {
+          // cheer: recording a score to a file
+          const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
+          const amount = getAmount(message)
+          if (dict[username] && dict[username].bits) {
+            dict[username].bits += amount
+          } else if (dict[username]) {
+            dict[username].bits = amount
+          } else {
+            dict[username] = {
+              name: username,
+              bits: amount
+            }
+          }
+          const msg = 'thx for the bits'
+          fs.writeFileSync(`${counterDir}/${COUNTER}.json`, JSON.stringify(dict))
+          botLog(msg)
+          return chat.say(CHANNEL, msg)
+        }
       } else if (!['PONG', 'USERSTATE', 'GLOBALUSERSTATE'].includes(command)) {
         // joins, parts, etc.
         fs.appendFileSync(dateFilename, `==> ${command} ${username} ${message || ''}\n`)
       }
     }
   })
-})
-app.get('/chrissucks', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*')
-  return res.send(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
 })
 
 app.listen(port, () => console.log(`Spotify callback API endpoint app listening on port ${port}.`))
