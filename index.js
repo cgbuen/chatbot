@@ -35,7 +35,7 @@ if (!fs.existsSync(logDir)) {
 }
 fs.writeFileSync(dateFilename, `${dateString}\n\n`)
 
-const counterDir = './counter'
+const counterDir = '../crack-city-leaderboards/public'
 if (!fs.existsSync(counterDir)) {
   fs.mkdirSync(counterDir)
 }
@@ -264,6 +264,10 @@ app.get('/callback', async (req, res) => {
       }
     }
   })
+})
+app.get('/chrissucks', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  return res.send(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
 })
 
 app.listen(port, () => console.log(`Spotify callback API endpoint app listening on port ${port}.`))
