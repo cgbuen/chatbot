@@ -6,6 +6,7 @@ const TwitchJs = require('twitch-js').default
 const qs = require('qs')
 const open = require('open')
 const requestSpotify = require('./request-spotify')
+const requestNintendo = require('./request-nintendo')
 const { BOT_USER, CHANNEL, GAME_ID, TWITCH_TOKEN, SPOTIFY_CLIENT_ID, DISCORD, COUNTER } = require('./vars')
 
 const csrfGenerator = new Csrf()
@@ -35,7 +36,7 @@ if (!fs.existsSync(logDir)) {
 }
 fs.writeFileSync(dateFilename, `${dateString}\n\n`)
 
-const counterDir = '../crack-city-leaderboards/public'
+const counterDir = './'
 if (!fs.existsSync(counterDir)) {
   fs.mkdirSync(counterDir)
 }
@@ -158,7 +159,7 @@ app.get('/callback', async (req, res) => {
         if (message === '!rank') {
           // !rank: retrieve score data, analyze, and spit back out into message
           const dict = JSON.parse(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
-          const userCount = dict[username] || 0
+          const userCount = (dict[username] && dict[username].chrissucks) || 0
           let totalCount = 0
 
           // create ranks array, where indices may be undefined, e.g.
@@ -168,7 +169,7 @@ app.get('/callback', async (req, res) => {
           const countRanks = []
           for (let key in dict) {
             if (dict.hasOwnProperty(key)) {
-              const count = parseInt(dict[key])
+              const count = parseInt(dict[key].chrissucks)
               if (countRanks[count]) {
                 countRanks[count]++
               } else {
@@ -299,6 +300,16 @@ app.get('/callback', async (req, res) => {
       }
     }
   })
+})
+
+app.get('/stats.json', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  return res.send(fs.readFileSync(`${counterDir}/${COUNTER}.json`))
+})
+
+app.get('/player.json', async (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  return res.send(await requestNintendo.requestPlayer())
 })
 
 app.listen(port, () => console.log(`Spotify callback API endpoint app listening on port ${port}.`))
