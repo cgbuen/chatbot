@@ -3,7 +3,7 @@ const MSGS = {
   INVALID_USER: 'bro i don\'t think this guy is real'
 }
 
-module.exports = function so({ chat, message }) {
+module.exports = function so({ message }) {
   const userInput = message.match(/^\!(so|shoutout)\s@?([\w]+)(\s|$)/)[2]
   try {
     const userObj = await api.get('users', { search: { login: userInput } })

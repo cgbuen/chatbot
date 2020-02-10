@@ -2,7 +2,7 @@ const fs = require('fs')
 const bitRegExp = require('../helpers/bitRegExp')
 const { COUNTER } = require('../vars')
 
-module.exports = function bits({ chat, username, message }) {
+module.exports = function bits({ username, message }) {
   // cheer: recording a score to a file
   const getAmount = msg => {
     let amount = 0

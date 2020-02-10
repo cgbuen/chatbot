@@ -57,46 +57,46 @@ app.get('/callback', async (req, res) => {
         fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
         let msg
         if (/^\!(chri(s|d)?_?s?u(c|k|x)|rekt)/.test(message)) {
-          msg = require('./commands/chrissucks')({ chat, username })
+          msg = require('./commands/chrissucks')({ username })
         }
         if (message === '!rank') {
-          msg = require('./commands/rank')({ chat, username })
+          msg = require('./commands/rank')({ username })
         }
         if (message === '!fc') {
-          msg = require('./commands/fc')({ chat })
+          msg = require('./commands/fc')()
         }
         if (message === '!discord') {
-          msg = require('./commands/discord')({ chat })
+          msg = require('./commands/discord')()
         }
         if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
-          msg = require('./commands/controls')({ chat })
+          msg = require('./commands/controls')()
         }
         if (message === '!song') {
-          msg = await require('./commands/spotify-song')({ chat, spotifyTokenData })
+          msg = await require('./commands/spotify-song')({ spotifyTokenData })
         }
         if (message === '!devices') {
-          msg = await require('./commands/spotify-devices')({ chat, spotifyTokenData })
+          msg = await require('./commands/spotify-devices')({ spotifyTokenData })
         }
         if (/^\!(so|shoutout)\s@?[\w]+(\s|$)/.test(message)) {
-          msg = require('./commands/so')({ chat, message })
+          msg = require('./commands/so')({ message })
         }
         if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
-          msg = require('./commands/charity')({ chat })
+          msg = require('./commands/charity')()
         }
         if (message === '!hype') {
-          msg = require('./commands/hype')({ chat })
+          msg = require('./commands/hype')()
         }
         if (message === '!lurk') {
-          msg = require('./commands/lurk')({ chat })
+          msg = require('./commands/lurk')()
         }
         if (message.startsWith('!up')) {
-          msg = require('./commands/uptime')({ chat, startTime })
+          msg = require('./commands/uptime')({ startTime })
         }
         if (message === '!commands') {
-          msg = require('./commands/commands')({ chat })
+          msg = require('./commands/commands')()
         }
         if (bitRegExp.test(message)) {
-          msg = require('./commands/bits')({ chat, username, message })
+          msg = require('./commands/bits')({ username, message })
         }
         fs.appendFileSync(dateFilename, `<BOT_${BOT_USER}> ${msg}\n`)
         return chat.say(CHANNEL, msg)
