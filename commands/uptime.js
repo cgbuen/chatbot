@@ -1,6 +1,6 @@
 const moment = require('moment')
 
-module.exports = function up({ chat, startTime }) {
+module.exports = function up({ startTime }) {
   const currTime = moment()
   const duration = moment.duration(currTime.diff(startTime))
   let time = `${duration.get('minutes')}m ${duration.get('seconds')}s`

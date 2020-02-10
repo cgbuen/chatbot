@@ -1,7 +1,7 @@
 const fs = require('fs')
 const { COUNTER } = require('../vars')
 
-module.exports = function chrissucks({ chat, username }) {
+module.exports = function chrissucks({ username }) {
   // !chrissucks: send simple message while recording a score to a file
   const dict = JSON.parse(fs.readFileSync(`./${COUNTER}.json`))
   if (dict[username] && dict[username].chrissucks) {

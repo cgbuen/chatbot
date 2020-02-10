@@ -1,7 +1,7 @@
 const fs = require('fs')
 const { COUNTER } = require('../vars')
 
-module.exports = function rank({ chat, username }) {
+module.exports = function rank({ username }) {
   // !rank: retrieve score data, analyze, and spit back out into message
   const dict = JSON.parse(fs.readFileSync(`./${COUNTER}.json`))
   const userCount = (dict[username] && dict[username].chrissucks) || 0

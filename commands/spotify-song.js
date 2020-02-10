@@ -6,7 +6,7 @@ const MSGS = {
   NOT_PLAYING: 'i\'m not playing anything on spotify rn'
 }
 
-module.exports = async function song({ chat, spotifyTokenData }) {
+module.exports = async function song({ spotifyTokenData }) {
   let accessToken = spotifyTokenData.access_token
   let refreshToken = spotifyTokenData.refresh_token
 

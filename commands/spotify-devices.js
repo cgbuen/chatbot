@@ -1,6 +1,6 @@
 const requestSpotify = require('../request-spotify')
 
-module.exports = async function devices({ chat, spotifyTokenData }) {
+module.exports = async function devices({ spotifyTokenData }) {
   let accessToken = spotifyTokenData.access_token
   let refreshToken = spotifyTokenData.refresh_token
   const spotifyDeviceData = await requestSpotify.devices(accessToken)
