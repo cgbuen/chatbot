@@ -1,17 +1,18 @@
 # My Twitch Chatbot
 
-My locally-running Twitch chatbot for some simple commands, including ID
+My locally-running Twitch chatbot for some simple commands, including game ID
 display, currently-playing Spotify song, shoutouts with real-user checking, and
-a fun leaderboard chat game. It also records logs.
+a fun leaderboard chat game. It also logs the chat.
 
-Good for not having to depend on your own machine's Spotify desktop application,
-but instead Spotify's API data that they have on you.
+Good for not having to depend on your own machine's Spotify desktop client
+application, but instead Spotify's API data that they have on you as you're
+playing music.
 
 Note that Spotify's API requires OAuth 2.0 to get any user data, which makes for
 a somewhat complicated authentication process (it in fact requires the use of an
-actual Spotify app). The directions here allow you to quickly stand up your own
-app (it does not have to be published), so that you're authenticating to what
-you've made yourself, rather than someone else's live app.
+actual Spotify developer app). The directions here allow you to quickly stand up
+your own app (it does not have to be published), so that you're authenticating
+to what you've made yourself, rather than someone else's live developer app.
 
 ## Register as a Spotify Developer
 
@@ -44,6 +45,7 @@ following format:
       SPOTIFY_CLIENT_SECRET: '[your spotify app's client_secret]',
       DISCORD: '[link to your discord server]',
       COUNTER: '[extension-less filename for JSON counter file]'
+      IKSM_TOKEN: '[Nintendo token]'
     }
 
 ### Notes
@@ -53,6 +55,8 @@ following format:
 - `TWITCH_TOKEN` can be retrieved from [here](https://twitchapps.com/tmi/)
   (click the broken image button). This appears to be a long-lived token, so
   unlike the Spotify integration, no complex authentication process is needed.
+- `IKSM_TOKEN` can be pulled from an MitM proxy such as Charles when using your
+  NSO app.
 
 ## Run
 
