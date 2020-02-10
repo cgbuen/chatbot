@@ -44,7 +44,7 @@ following format:
       SPOTIFY_CLIENT_ID: '[your spotify app's client_id]',
       SPOTIFY_CLIENT_SECRET: '[your spotify app's client_secret]',
       DISCORD: '[link to your discord server]',
-      COUNTER: '[extension-less filename for JSON counter file]'
+      COUNTER: '[extension-less filename for JSON counter file]',
       IKSM_TOKEN: '[Nintendo token]'
     }
 
