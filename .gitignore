@@ -1,5 +1,6 @@
 .DS_Store
 node_modules
+token-store
 twitch-logs
 stats.json
 vars.js
