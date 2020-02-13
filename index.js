@@ -14,10 +14,6 @@ const { BOT_USER, CHANNEL, SPOTIFY_CLIENT_ID, TWITCH_CLIENT_ID, COUNTER } = requ
 const csrfGenerator = new Csrf()
 const CSRF_SECRET = csrfGenerator.secretSync()
 const CSRF_TOKEN = csrfGenerator.create(CSRF_SECRET)
-const TWITCH_OPTIONS = {
-  token: fs.readFileSync('./token-store/twitch-access', 'utf8').trim(),
-  username: BOT_USER
-}
 
 const app = express()
 const port = 3000
@@ -111,69 +107,95 @@ app.get('/player.json', async (req, res) => {
   return res.send(await requestNintendo.requestPlayer())
 })
 
-app.get('/chat', async (req, res) => {
-  const { chat, api } = new TwitchJs(TWITCH_OPTIONS)
-  await chat.connect()
-  await chat.join(CHANNEL)
+const chatEndpoint = async (req, res) => {
+  const connectToChat = async (accessToken, { retries = 3 } = {}) => {
+    if (!retries) {
+      console.log('** too many twitch stats refresh attempts')
+      data = { error: 'Too many Stats refresh attempts.', }
+      return data
+    }
 
-  chat.on('*', async (msg) => {
-    const { command, message, username, channel } = msg
-    if (channel === `#${CHANNEL}`) {
-      if (command === 'PRIVMSG') {
-        fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
-        let msg
-        if (/^\!(chri(s|d)?_?s?u(c|k|x)|rekt)/.test(message)) {
-          msg = require('./commands/chrissucks')({ username })
+    try {
+      const { chat } = new TwitchJs({
+        token: accessToken,
+        username: BOT_USER
+      })
+      await chat.connect()
+      await chat.join(CHANNEL)
+
+      const chatCallback = async (msg) => {
+        const { command, message, username, channel } = msg
+        if (channel === `#${CHANNEL}`) {
+          if (command === 'PRIVMSG') {
+            fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
+            let msg
+            if (/^\!(chri(s|d)?_?s?u(c|k|x)|rekt)/.test(message)) {
+              msg = require('./commands/chrissucks')({ username })
+            }
+            if (message === '!rank') {
+              msg = require('./commands/rank')({ username })
+            }
+            if (message === '!fc') {
+              msg = require('./commands/fc')()
+            }
+            if (message === '!discord') {
+              msg = require('./commands/discord')()
+            }
+            if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
+              msg = require('./commands/controls')()
+            }
+            if (message === '!song') {
+              msg = await require('./commands/spotify-song')()
+            }
+            if (message === '!devices') {
+              msg = await require('./commands/spotify-devices')()
+            }
+            if (/^\!(so|shoutout)\s@?[\w]+(\s|$)/.test(message)) {
+              msg = await require('./commands/so')({ message })
+            }
+            if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
+              msg = require('./commands/charity')()
+            }
+            if (message === '!hype') {
+              msg = require('./commands/hype')()
+            }
+            if (message === '!lurk') {
+              msg = require('./commands/lurk')()
+            }
+            if (message.startsWith('!up')) {
+              msg = require('./commands/uptime')({ startTime })
+            }
+            if (message === '!commands') {
+              msg = require('./commands/commands')()
+            }
+            if (bitRegExp.test(message)) {
+              msg = require('./commands/bits')({ username, message })
+            }
+            fs.appendFileSync(dateFilename, `<BOT_${BOT_USER}> ${msg}\n`)
+            return chat.say(CHANNEL, msg)
+          } else if (!['PONG', 'USERSTATE', 'GLOBALUSERSTATE'].includes(command)) {
+            // logs for joins, parts, etc.
+            fs.appendFileSync(dateFilename, `==> ${command} ${username} ${message || ''}\n`)
+          }
         }
-        if (message === '!rank') {
-          msg = require('./commands/rank')({ username })
-        }
-        if (message === '!fc') {
-          msg = require('./commands/fc')()
-        }
-        if (message === '!discord') {
-          msg = require('./commands/discord')()
-        }
-        if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
-          msg = require('./commands/controls')()
-        }
-        if (message === '!song') {
-          msg = await require('./commands/spotify-song')()
-        }
-        if (message === '!devices') {
-          msg = await require('./commands/spotify-devices')()
-        }
-        if (/^\!(so|shoutout)\s@?[\w]+(\s|$)/.test(message)) {
-          msg = await require('./commands/so')({ message, api })
-        }
-        if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
-          msg = require('./commands/charity')()
-        }
-        if (message === '!hype') {
-          msg = require('./commands/hype')()
-        }
-        if (message === '!lurk') {
-          msg = require('./commands/lurk')()
-        }
-        if (message.startsWith('!up')) {
-          msg = require('./commands/uptime')({ startTime })
-        }
-        if (message === '!commands') {
-          msg = require('./commands/commands')()
-        }
-        if (bitRegExp.test(message)) {
-          msg = require('./commands/bits')({ username, message })
-        }
-        fs.appendFileSync(dateFilename, `<BOT_${BOT_USER}> ${msg}\n`)
-        return chat.say(CHANNEL, msg)
-      } else if (!['PONG', 'USERSTATE', 'GLOBALUSERSTATE'].includes(command)) {
-        // logs for joins, parts, etc.
-        fs.appendFileSync(dateFilename, `==> ${command} ${username} ${message || ''}\n`)
+      }
+      chat.on('*', chatCallback)
+      res.redirect('https://dashboard.twitch.tv/u/cgbuen/stream-manager')
+    } catch(e) {
+      console.log('==> Request twitch api chat error', e)
+      if (e.event === 'AUTHENTICATION_FAILED') {
+        console.log('** Unauthorized chat response data')
+        const twitchTokenDataUpdated = await requestTwitch.refresh(fs.readFileSync('./token-store/twitch-refresh', 'utf8'))
+        return connectToChat(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
+      } else {
+        console.log('** Error unrelated to authentication failure')
       }
     }
-  })
-  res.redirect('https://dashboard.twitch.tv/u/cgbuen/stream-manager')
-})
+  }
+  return await connectToChat(fs.readFileSync('./token-store/twitch-access', 'utf8').trim())
+}
+
+app.get('/chat', chatEndpoint)
 
 app.listen(port, () => console.log(`Spotify callback API endpoint app listening on port ${port}.`))
 open('http://localhost:3000/chat')

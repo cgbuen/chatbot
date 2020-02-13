@@ -61,11 +61,39 @@ const refresh = async (refreshToken) => {
   return data
 }
 
+const lookupUser = async (accessToken, userInput, { retries = 3 } = {}) => {
+  let data
+  if (!retries) {
+    console.log('** too many twitch stats refresh attempts')
+    data = { error: 'Too many User Lookup refresh attempts.', }
+    return data
+  }
+  try {
+    const { api } = new TwitchJs({
+      token: accessToken,
+      username: BOT_USER
+    })
+    const userResponse = await api.get('users', { version: 'helix', search: { login: userInput} })
+    data = userResponse.data
+  } catch (e) {
+    console.log('==> Request twitch lookupUser api fetch error', e)
+    if (e.body.error === 'Unauthorized') {
+      console.log('** Unauthorized getAllStats response data')
+      const twitchTokenDataUpdated = await refresh(fs.readFileSync('./token-store/twitch-refresh', 'utf8'))
+      data = await lookupUser(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
+    } else {
+      console.log('** Error')
+      data = []
+    }
+  }
+  return data
+}
+
 const getAllStats = async (accessToken, { retries = 3 } = {}) => {
   let data
   if (!retries) {
     console.log('** too many twitch stats refresh attempts')
-    data = { error: 'Too many Statsrefresh attempts.', }
+    data = { error: 'Too many Stats refresh attempts.', }
     return data
   }
   try {
@@ -79,7 +107,7 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
       subs
     }
   } catch (e) {
-    console.log('==> Request twitch api fetch error', e)
+    console.log('==> Request twitch getAllStats api fetch error', e)
     if (e.body.error === 'Unauthorized') {
       console.log('** Unauthorized getAllStats response data')
       const twitchTokenDataUpdated = await refresh(fs.readFileSync('./token-store/twitch-refresh', 'utf8'))
@@ -96,5 +124,6 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
 module.exports = {
   auth,
   refresh,
+  lookupUser,
   getAllStats
 }
