@@ -1,5 +1,6 @@
 const fs = require('fs')
 const requestSpotify = require('../helpers/request-spotify')
+const { TOKEN_STORE } = require('../vars')
 
 const COUNT_RETRIES = 3
 const MSGS = {
@@ -8,7 +9,7 @@ const MSGS = {
 }
 
 module.exports = async function song() {
-  const accessToken = fs.readFileSync('./token-store/spotify-access')
+  const accessToken = fs.readFileSync(`./${TOKEN_STORE}/spotify-access`)
   const currentlyPlayingData = await requestSpotify.currentlyPlaying(accessToken)
   if (currentlyPlayingData && currentlyPlayingData.error) {
     // if other error, just tell the user it's broken

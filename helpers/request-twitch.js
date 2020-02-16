@@ -2,7 +2,7 @@ const fs = require('fs')
 const fetch = require('node-fetch')
 const TwitchJs = require('twitch-js').default
 const qs = require('qs')
-const { BOT_USER, TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET } = require('../vars')
+const { BOT_USER, TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TOKEN_STORE } = require('../vars')
 
 const auth = async (authCode) => {
   // initial authorization
@@ -50,8 +50,9 @@ const refresh = async (refreshToken) => {
   try {
     const twitchResponseRefresh = await fetch('https://id.twitch.tv/oauth2/token', twitchOptionsRefresh)
     data = await twitchResponseRefresh.json()
-    fs.writeFileSync('./token-store/twitch-access', data.access_token)
-    fs.writeFileSync('./token-store/twitch-refresh', data.refresh_token)
+    console.log(data)
+    fs.writeFileSync(`./${TOKEN_STORE}/twitch-access`, data.access_token)
+    fs.writeFileSync(`./${TOKEN_STORE}/twitch-refresh`, data.refresh_token)
   } catch(e) {
     console.log('==> Request fetch error refresh', e)
     data = {
@@ -79,7 +80,7 @@ const lookupUser = async (accessToken, userInput, { retries = 3 } = {}) => {
     console.log('==> Request twitch lookupUser api fetch error', e)
     if (e.body.error === 'Unauthorized') {
       console.log('** Unauthorized getAllStats response data')
-      const twitchTokenDataUpdated = await refresh(fs.readFileSync('./token-store/twitch-refresh', 'utf8'))
+      const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
       data = await lookupUser(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
     } else {
       console.log('** Error')
@@ -110,7 +111,7 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
     console.log('==> Request twitch getAllStats api fetch error', e)
     if (e.body.error === 'Unauthorized') {
       console.log('** Unauthorized getAllStats response data')
-      const twitchTokenDataUpdated = await refresh(fs.readFileSync('./token-store/twitch-refresh', 'utf8'))
+      const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
       data = await getAllStats(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
     } else {
       data = {

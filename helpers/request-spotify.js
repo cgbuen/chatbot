@@ -1,7 +1,7 @@
 const fs = require('fs')
 const fetch = require('node-fetch')
 const qs = require('qs')
-const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } = require('../vars')
+const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, TOKEN_STORE } = require('../vars')
 
 const auth = async (authCode) => {
   // initial authorization
@@ -49,7 +49,7 @@ const refresh = async (refreshToken) => {
   try {
     const spotifyResponseRefresh = await fetch('https://accounts.spotify.com/api/token', spotifyOptionsRefresh)
     data = await spotifyResponseRefresh.json()
-    fs.writeFileSync('./token-store/spotify-access', data.access_token)
+    fs.writeFileSync(`./${TOKEN_STORE}/spotify-access`, data.access_token)
   } catch(e) {
     console.log('==> Request fetch error refresh', e)
     data = {
@@ -80,7 +80,7 @@ const currentlyPlaying = async (accessToken, { retries = 3 } = {}) => {
       data = await spotifyResponseCurrentlyPlaying.json()
     } else if (spotifyResponseCurrentlyPlaying.statusText === 'Unauthorized') {
       console.log('** Unauthorized currently playing response data')
-      const spotifyTokenDataUpdated = await refresh(fs.readFileSync('./token-store/spotify-refresh', 'utf8'))
+      const spotifyTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/spotify-refresh`, 'utf8'))
       data = await currentlyPlaying(spotifyTokenDataUpdated.access_token, { retries: retries - 1 }) // try again now that tokens are updated
     } else {
       // other non-OK response seems to imply no active session, so fake a "not
@@ -117,7 +117,7 @@ const devices = async (accessToken, { retries = 3 } = {}) => {
       data = await spotifyResponseDevices.json()
     } else if (spotifyResponseDevices.statusText === 'Unauthorized') {
       console.log('** Unauthorized device response data')
-      const spotifyTokenDataUpdated = await refresh(fs.readFileSync('./token-store/spotify-refresh', 'utf8'))
+      const spotifyTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/spotify-refresh`, 'utf8'))
       data = await devices(spotifyTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
     } else {
       // non-OK response seems to imply no active session, so fake a "not

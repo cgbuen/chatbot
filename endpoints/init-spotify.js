@@ -2,7 +2,7 @@ const fs = require('fs')
 const qs = require('qs')
 const Csrf = require('csrf')
 const requestSpotify = require('../helpers/request-spotify')
-const { SPOTIFY_CLIENT_ID } = require('../vars')
+const { SPOTIFY_CLIENT_ID, TOKEN_STORE } = require('../vars')
 
 const csrfGenerator = new Csrf()
 const CSRF_SECRET = csrfGenerator.secretSync()
@@ -25,8 +25,8 @@ const callback = async (req, res) => {
     return res.send('Authentication failed.')
   }
   const tokenData = await requestSpotify.auth(req.query.code)
-  fs.writeFileSync('./token-store/spotify-access', tokenData.access_token)
-  fs.writeFileSync('./token-store/spotify-refresh', tokenData.refresh_token)
+  fs.writeFileSync(`./${TOKEN_STORE}/spotify-access`, tokenData.access_token)
+  fs.writeFileSync(`./${TOKEN_STORE}/spotify-refresh`, tokenData.refresh_token)
   return res.send('Stored Spotify tokens.')
 }
 
