@@ -14,7 +14,7 @@ const auth = async (authCode) => {
     body: qs.stringify({
       grant_type: 'authorization_code',
       code: authCode,
-      redirect_uri: 'http://localhost:3000/twitch-callback',
+      redirect_uri: 'http://localhost:3000/callback-twitch',
       client_id: TWITCH_CLIENT_ID,
       client_secret: TWITCH_CLIENT_SECRET
     })

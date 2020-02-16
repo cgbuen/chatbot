@@ -22,11 +22,11 @@ OAuth 2.0.
 1. Register as a [Spotify Developer](https://developer.spotify.com/dashboard/login).
 2. Create a project by clicking the "Create a Client ID" and filling out all
    the appropriate fields.
-3. Go to "Edit Settings" and add `http://localhost:3000/spotify-callback` to the
+3. Go to "Edit Settings" and add `http://localhost:3000/callback-spotify` to the
    whitelist of Redirect URIs.
 4. Make note of the app's associated Client ID and Client Secret. These get
    used when configuring this bot later (see the Configure section).
-5. Repeat steps 1-4 for Twitch.
+5. Repeat steps 1-4, but for Twitch.
 
 ## Install
 
@@ -46,6 +46,8 @@ following format:
       GAME_ID: '[your gaming id of choice]'
       SPOTIFY_CLIENT_ID: '[your spotify app's client_id]',
       SPOTIFY_CLIENT_SECRET: '[your spotify app's client_secret]',
+      TWITCH_CLIENT_ID: '[your twitch app's client_id]',
+      TWITCH_CLIENT_SECRET: '[your twitch app's client_secret]',
       DISCORD: '[link to your discord server]',
       COUNTER: '[extension-less filename for JSON counter file]'
     }
