@@ -1,8 +1,8 @@
-const requestSpotify = require('../request-spotify')
+const fs = require('fs')
+const requestSpotify = require('../helpers/request-spotify')
 
-module.exports = async function devices({ spotifyTokenData }) {
-  let accessToken = spotifyTokenData.access_token
-  let refreshToken = spotifyTokenData.refresh_token
+module.exports = async function devices() {
+  const accessToken = fs.readFileSync('./token-store/spotify-access')
   const spotifyDeviceData = await requestSpotify.devices(accessToken)
   const msg = spotifyDeviceData.devices.map(device => `${device.name} (${device.type})`).join(', ') || 'no devices'
   return msg

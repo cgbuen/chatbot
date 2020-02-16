@@ -1,11 +1,11 @@
+const fs = require('fs')
 const fetch = require('node-fetch')
-const { IKSM_TOKEN } = require('./vars')
 const moment = require('moment')
 
 const requestPlayer = async () => {
   const requestOptions = {
     headers: {
-      cookie: `iksm_session=${IKSM_TOKEN}`,
+      cookie: `iksm_session=${fs.readFileSync('./token-store/nintendo-access', 'utf8')}`,
       'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
     }
   }

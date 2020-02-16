@@ -1,6 +1,7 @@
+const fs = require('fs')
 const fetch = require('node-fetch')
 const qs = require('qs')
-const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } = require('./vars')
+const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } = require('../vars')
 
 const auth = async (authCode) => {
   // initial authorization
@@ -12,7 +13,7 @@ const auth = async (authCode) => {
     body: qs.stringify({
       grant_type: 'authorization_code',
       code: authCode,
-      redirect_uri: 'http://localhost:3000/callback',
+      redirect_uri: 'http://localhost:3000/callback-spotify',
       client_id: SPOTIFY_CLIENT_ID,
       client_secret: SPOTIFY_CLIENT_SECRET
     })
@@ -48,6 +49,7 @@ const refresh = async (refreshToken) => {
   try {
     const spotifyResponseRefresh = await fetch('https://accounts.spotify.com/api/token', spotifyOptionsRefresh)
     data = await spotifyResponseRefresh.json()
+    fs.writeFileSync('./token-store/spotify-access', data.access_token)
   } catch(e) {
     console.log('==> Request fetch error refresh', e)
     data = {
@@ -57,14 +59,20 @@ const refresh = async (refreshToken) => {
   return data
 }
 
-const currentlyPlaying = async (accessToken) => {
+const currentlyPlaying = async (accessToken, { retries = 3 } = {}) => {
   // actual api call for usable data
+  let data
+  if (!retries) {
+    console.log('** too many spotify currently playing refresh attempts')
+    data = { error: 'Too many Currently Playing refresh attempts.', is_playing: false, noSession: true }
+    return data
+  }
+
   const spotifyOptionsCurrentlyPlaying = {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
   }
-  let data
   try {
     const spotifyResponseCurrentlyPlaying = await fetch('https://api.spotify.com/v1/me/player', spotifyOptionsCurrentlyPlaying)
     if (spotifyResponseCurrentlyPlaying.statusText === 'OK') {
@@ -72,7 +80,8 @@ const currentlyPlaying = async (accessToken) => {
       data = await spotifyResponseCurrentlyPlaying.json()
     } else if (spotifyResponseCurrentlyPlaying.statusText === 'Unauthorized') {
       console.log('** Unauthorized currently playing response data')
-      data = await spotifyResponseCurrentlyPlaying.json()
+      const spotifyTokenDataUpdated = await refresh(fs.readFileSync('./token-store/spotify-refresh', 'utf8'))
+      data = await currentlyPlaying(spotifyTokenDataUpdated.access_token, { retries: retries - 1 }) // try again now that tokens are updated
     } else {
       // other non-OK response seems to imply no active session, so fake a "not
       // playing" response
@@ -88,30 +97,37 @@ const currentlyPlaying = async (accessToken) => {
   return data
 }
 
-const devices = async (accessToken) => {
+const devices = async (accessToken, { retries = 3 } = {}) => {
   // actual api call for usable data
+  let data
+  if (!retries) {
+    console.log('** too many spotify device refresh attempts')
+    data = { error: 'Too many Devices refresh attempts.', is_playing: false, noSession: true }
+    return data
+  }
   const spotifyOptionsCurrentlyPlaying = {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
   }
-  let data
   try {
-    const spotifyResponseCurrentlyPlaying = await fetch('https://api.spotify.com/v1/me/player/devices', spotifyOptionsCurrentlyPlaying)
-    if (spotifyResponseCurrentlyPlaying.statusText === 'OK') {
-      data = await spotifyResponseCurrentlyPlaying.json()
+    const spotifyResponseDevices = await fetch('https://api.spotify.com/v1/me/player/devices', spotifyOptionsCurrentlyPlaying)
+    if (spotifyResponseDevices.statusText === 'OK') {
       console.log('** OK device response data')
+      data = await spotifyResponseDevices.json()
+    } else if (spotifyResponseDevices.statusText === 'Unauthorized') {
+      console.log('** Unauthorized device response data')
+      const spotifyTokenDataUpdated = await refresh(fs.readFileSync('./token-store/spotify-refresh', 'utf8'))
+      data = await devices(spotifyTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
     } else {
       // non-OK response seems to imply no active session, so fake a "not
       // playing" response
-      console.log('** non-OK device response:', spotifyResponseCurrentlyPlaying)
+      console.log('** non-OK device response:', spotifyResponseDevices)
       data = []
     }
   } catch (e) {
-    console.log('==> Request fetch error currently playing', e)
-    data = {
-      error: 'fetch error: devices'
-    }
+    console.log('==> Request fetch error devices', e)
+    data = []
   }
   return data
 }

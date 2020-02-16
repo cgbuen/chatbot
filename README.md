@@ -14,15 +14,19 @@ actual Spotify developer app). The directions here allow you to quickly stand up
 your own app (it does not have to be published), so that you're authenticating
 to what you've made yourself, rather than someone else's live developer app.
 
-## Register as a Spotify Developer
+Similar functionality has been added for the new Twitch API, which also uses
+OAuth 2.0.
+
+## Register Developer Apps
 
 1. Register as a [Spotify Developer](https://developer.spotify.com/dashboard/login).
 2. Create a project by clicking the "Create a Client ID" and filling out all
    the appropriate fields.
-3. Go to "Edit Settings" and add `http://localhost:3000/callback` to the
+3. Go to "Edit Settings" and add `http://localhost:3000/callback-spotify` to the
    whitelist of Redirect URIs.
 4. Make note of the app's associated Client ID and Client Secret. These get
    used when configuring this bot later (see the Configure section).
+5. Repeat steps 1-4, but for Twitch.
 
 ## Install
 
@@ -40,23 +44,18 @@ following format:
       BOT_USER: '[your bot's twitch handle]',
       CHANNEL: '[your channel]',
       GAME_ID: '[your gaming id of choice]'
-      TWITCH_TOKEN: '[your twitch oauth token]',
       SPOTIFY_CLIENT_ID: '[your spotify app's client_id]',
       SPOTIFY_CLIENT_SECRET: '[your spotify app's client_secret]',
+      TWITCH_CLIENT_ID: '[your twitch app's client_id]',
+      TWITCH_CLIENT_SECRET: '[your twitch app's client_secret]',
       DISCORD: '[link to your discord server]',
-      COUNTER: '[extension-less filename for JSON counter file]',
-      IKSM_TOKEN: '[Nintendo token]'
+      COUNTER: '[extension-less filename for JSON counter file]'
     }
 
 ### Notes
 
-- `BOT_USER` can be the same handle you use for your channel.
+- `BOT_USER` can be the same handle you use for your channel (`CHANNEL`).
 - `GAME_ID` example: Nintendo Switch Friend Code
-- `TWITCH_TOKEN` can be retrieved from [here](https://twitchapps.com/tmi/)
-  (click the broken image button). This appears to be a long-lived token, so
-  unlike the Spotify integration, no complex authentication process is needed.
-- `IKSM_TOKEN` can be pulled from an MitM proxy such as Charles when using your
-  NSO app.
 
 ## Run
 

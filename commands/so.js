@@ -1,13 +1,17 @@
+const fs = require('fs')
+const requestTwitch = require('../helpers/request-twitch')
+
 const MSGS = {
   BROKEN_SHOUT: 'chatbot shoutouts are broken lol',
   INVALID_USER: 'bro i don\'t think this guy is real'
 }
 
-module.exports = function so({ message }) {
+module.exports = async function so({ message }) {
+  const accessToken = fs.readFileSync('./token-store/twitch-access', 'utf8')
   const userInput = message.match(/^\!(so|shoutout)\s@?([\w]+)(\s|$)/)[2]
   try {
-    const userObj = await api.get('users', { search: { login: userInput } })
-    if (userObj.total === 1) {
+    const userArray = await requestTwitch.lookupUser(accessToken, userInput)
+    if (userArray.length === 1) {
       const msg = `shouts out ${userInput} https://twitch.tv/${userInput} ayyyy`
       return msg
     } else {
