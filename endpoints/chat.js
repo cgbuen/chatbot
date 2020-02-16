@@ -2,14 +2,18 @@ const fs = require('fs')
 const TwitchJs = require('twitch-js').default
 const requestTwitch = require('../helpers/request-twitch')
 const bitRegExp = require('../helpers/bitRegExp')
-const { BOT_USER, CHANNEL } = require('../vars')
+const { BOT_USER, CHANNEL, TOKEN_STORE } = require('../vars')
 
-module.exports = ({ dateFilename, startTime }) => {
+module.exports = ({ startTime }) => {
   return async (req, res) => {
     const connectToChat = async (accessToken, { retries = 3 } = {}) => {
+      const LOG_DIR = './twitch-logs'
+      const dateString = startTime.format('YYYY-MM-DD_HH-mm-ss')
+      const dateFilename = `${LOG_DIR}/${dateString}.txt`
       if (!retries) {
-        console.log('** too many twitch stats refresh attempts')
-        data = { error: 'Too many Stats refresh attempts.', }
+        const msg = 'Too many twitch stats refresh attempts'
+        console.log(`** ${msg}`)
+        data = { error: msg }
         return data
       }
 
@@ -18,7 +22,25 @@ module.exports = ({ dateFilename, startTime }) => {
           token: accessToken,
           username: BOT_USER
         })
+
         await chat.connect()
+        if (fs.existsSync(dateFilename)) {
+          // after initializing TwitchJS and connecting _properly_ (i.e. getting
+          // past the above line without hitting the catch block due to auth
+          // errors) ensure that you can only hit /chat once when running this
+          // server, so that you don't have more than one chatbot. this is the
+          // error case.
+          const msg = 'Twitch chat connection already exists, so this new instance will disconnect. Restart the server if there are any issues.'
+          console.log(`** ${msg}`)
+          await chat.disconnect()
+          return res.send(msg)
+        } else {
+          // create the log directory if it doesn't exist
+          !fs.existsSync(LOG_DIR) && fs.mkdirSync(LOG_DIR)
+          // create the log file if it is in fact the first time /chat was hit,
+          // then proceed as normal.
+          fs.writeFileSync(dateFilename, `${dateString}\n\n`)
+        }
         await chat.join(CHANNEL)
 
         const chatCallback = async (msg) => {
@@ -83,13 +105,20 @@ module.exports = ({ dateFilename, startTime }) => {
         console.log('==> Request twitch api chat error', e)
         if (e.event === 'AUTHENTICATION_FAILED') {
           console.log('** Unauthorized chat response data')
-          const twitchTokenDataUpdated = await requestTwitch.refresh(fs.readFileSync('./token-store/twitch-refresh', 'utf8'))
+          const twitchTokenDataUpdated = await requestTwitch.refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
           return connectToChat(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
         } else {
-          console.log('** Error unrelated to authentication failure')
+          const msg = 'Error unrelated to authentication failure. Try re-initializing tokens by hitting /inittoken-twitch.'
+          const htmlMsg = `Error unrelated to authentication failure. Try re-initializing tokens by hitting the <a href="/inittoken-twitch">Twitch token initialization endpoint</a>.`
+          console.log(`** ${msg}`, e)
+          return res.send(`
+            <html>
+              <body>${htmlMsg}</body>
+            </html>
+          `)
         }
       }
     }
-    return await connectToChat(fs.readFileSync('./token-store/twitch-access', 'utf8').trim())
+    return await connectToChat(fs.readFileSync(`./${TOKEN_STORE}/twitch-access`, 'utf8').trim())
   }
 }

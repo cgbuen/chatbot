@@ -2,7 +2,7 @@ const fs = require('fs')
 const qs = require('qs')
 const Csrf = require('csrf')
 const requestTwitch = require('../helpers/request-twitch')
-const { TWITCH_CLIENT_ID } = require('../vars')
+const { TWITCH_CLIENT_ID, TOKEN_STORE } = require('../vars')
 
 const csrfGenerator = new Csrf()
 const CSRF_SECRET = csrfGenerator.secretSync()
@@ -36,9 +36,15 @@ const callback = async (req, res) => {
     return res.send('Authentication failed.')
   }
   const tokenData = await requestTwitch.auth(req.query.code)
-  fs.writeFileSync('./token-store/twitch-access', tokenData.access_token)
-  fs.writeFileSync('./token-store/twitch-refresh', tokenData.refresh_token)
-  return res.send('Stored Twitch tokens.')
+  fs.writeFileSync(`./${TOKEN_STORE}/twitch-access`, tokenData.access_token)
+  fs.writeFileSync(`./${TOKEN_STORE}/twitch-refresh`, tokenData.refresh_token)
+  return res.send(`
+    <html>
+      <body>
+        Stored Twitch tokens. <a href="/chat">Kick off chatbot and go to dashboard</a>
+      </body>
+    </html>
+  `)
 }
 
 module.exports = {

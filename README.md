@@ -49,13 +49,15 @@ following format:
       TWITCH_CLIENT_ID: '[your twitch app's client_id]',
       TWITCH_CLIENT_SECRET: '[your twitch app's client_secret]',
       DISCORD: '[link to your discord server]',
-      COUNTER: '[extension-less filename for JSON counter file]'
+      COUNTER: '[extension-less filename for local JSON counter file]',
+      TOKEN_STORE: '[local directory where tokens are stored]'
     }
 
 ### Notes
 
 - `BOT_USER` can be the same handle you use for your channel (`CHANNEL`).
 - `GAME_ID` example: Nintendo Switch Friend Code
+- Write your `TOKEN_STORE` value into a new line in _.gitignore_
 
 ## Run
 
