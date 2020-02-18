@@ -2,7 +2,6 @@ const fs = require('fs')
 const moment = require('moment')
 const TwitchJs = require('twitch-js').default
 const requestTwitch = require('../helpers/request-twitch')
-const bitRegExp = require('../helpers/bitRegExp')
 const { BOT_USER, CHANNEL, TOKEN_STORE } = require('../vars')
 
 module.exports = ({ startTime }) => {
@@ -88,9 +87,6 @@ module.exports = ({ startTime }) => {
               }
               if (message === '!commands') {
                 msg = require('../commands/commands')()
-              }
-              if (bitRegExp.test(message)) {
-                msg = require('../commands/bits')({ username, message })
               }
               if (msg) {
                 // new moment used here, in case wait time for msg construction
