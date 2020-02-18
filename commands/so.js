@@ -11,7 +11,8 @@ module.exports = async function so({ message }) {
   const accessToken = fs.readFileSync(`./${TOKEN_STORE}/twitch-access`, 'utf8')
   const userInput = message.match(/^\!(so|shoutout)\s@?([\w]+)(\s|$)/)[2]
   try {
-    const userArray = await requestTwitch.lookupUser(accessToken, userInput)
+    const userArrayResponse = await requestTwitch.lookupUser(accessToken, userInput)
+    const userArray = userArrayResponse.data
     if (userArray.length === 1) {
       const msg = `shouts out ${userInput} https://twitch.tv/${userInput} ayyyy`
       return msg

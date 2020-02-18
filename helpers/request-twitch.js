@@ -75,8 +75,7 @@ const lookupUser = async (accessToken, userInput, { retries = 3 } = {}) => {
       token: accessToken,
       username: BOT_USER
     })
-    const userResponse = await api.get('users', { version: 'helix', search: { login: userInput} })
-    data = userResponse.data
+    data = await api.get('users', { version: 'helix', search: { login: userInput } })
   } catch (e) {
     console.log('==> Request twitch lookupUser api fetch error', e)
     if (e.body.error === 'Unauthorized') {
@@ -105,28 +104,6 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
     })
     const users = await api.get('users', { version: 'helix', search: { login: BOT_USER } })
     const user = users.data[0].id
-
-    const subsResponse = await api.get(`channels/${user}/subscriptions`, {
-      version: 'kraken',
-      search: {
-        direction: 'asc',
-        limit: 5
-      }
-    })
-
-    const bitsLeaderboardAllTimeResponse = await api.get('bits/leaderboard', { version: 'helix' })
-    const bitsLeaderboardMonthResponse = await api.get('bits/leaderboard', {
-      version: 'helix',
-      search: {
-        period: 'month',
-        started_at: moment().startOf('month').format()
-      }
-    })
-    const bitsLeaderboard = {
-      alltime: bitsLeaderboardAllTimeResponse.data,
-      month: bitsLeaderboardMonthResponse.data
-    }
-
     const followersResponse = await api.get(`channels/${user}/follows`, {
       version: 'kraken',
       search: {
@@ -134,11 +111,36 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
         limit: 5
       }
     })
-
+    const subscriptionsResponse = await api.get(`channels/${user}/subscriptions`, {
+      version: 'kraken',
+      search: {
+        direction: 'asc',
+        limit: 5
+      }
+    })
+    const bitsLeadersAlltimeResponse = await api.get('bits/leaderboard', {
+      version: 'helix'
+    })
+    const bitsLeadersMonthResponse = await api.get('bits/leaderboard', {
+      version: 'helix',
+      search: {
+        period: 'month',
+        started_at: moment().startOf('month').format()
+      }
+    })
+    const bitsLeadersWeekResponse = await api.get('bits/leaderboard', {
+      version: 'helix',
+      search: {
+        period: 'week',
+        started_at: moment().startOf('week').format()
+      }
+    })
     data = {
-      subscribers: subsResponse.subscriptions,
-      bitsLeaderboard,
-      followers: followersResponse.follows
+      followersResponse,
+      subscriptionsResponse,
+      bitsLeadersAlltimeResponse,
+      bitsLeadersMonthResponse,
+      bitsLeadersWeekResponse
     }
   } catch (e) {
     console.log('==> Request twitch getAllStats api fetch error', e)
