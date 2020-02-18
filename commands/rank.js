@@ -4,7 +4,7 @@ const { COUNTER } = require('../vars')
 module.exports = function rank({ username }) {
   // !rank: retrieve score data, analyze, and spit back out into message
   const dict = JSON.parse(fs.readFileSync(`./${COUNTER}.json`))
-  const userCount = (dict[username] && dict[username].chrissucks) || 0
+  const userCount = (dict[username] && dict[username].chrissucks && dict[username].chrissucks.length) || 0
   let totalCount = 0
 
   // create ranks array, where indices may be undefined, e.g.
@@ -14,7 +14,7 @@ module.exports = function rank({ username }) {
   const countRanks = []
   for (let key in dict) {
     if (dict.hasOwnProperty(key)) {
-      const count = parseInt(dict[key].chrissucks)
+      const count = parseInt(dict[key].chrissucks && dict[key].chrissucks.length)
       if (countRanks[count]) {
         countRanks[count]++
       } else {
