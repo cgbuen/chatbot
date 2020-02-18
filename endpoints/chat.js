@@ -1,4 +1,5 @@
 const fs = require('fs')
+const moment = require('moment')
 const TwitchJs = require('twitch-js').default
 const requestTwitch = require('../helpers/request-twitch')
 const bitRegExp = require('../helpers/bitRegExp')
@@ -47,7 +48,7 @@ module.exports = ({ startTime }) => {
           const { command, message, username, channel } = msg
           if (channel === `#${CHANNEL}`) {
             if (command === 'PRIVMSG') {
-              fs.appendFileSync(dateFilename, `<${username}> ${message}\n`)
+              fs.appendFileSync(dateFilename, `[${moment().format()}] <${username}> ${message}\n`)
               let msg
               if (/^\!(chri(s|d)?_?s?u(c|k|x)|rekt)/.test(message)) {
                 msg = require('../commands/chrissucks')({ username })
@@ -91,8 +92,12 @@ module.exports = ({ startTime }) => {
               if (bitRegExp.test(message)) {
                 msg = require('../commands/bits')({ username, message })
               }
-              fs.appendFileSync(dateFilename, `<BOT_${BOT_USER}> ${msg}\n`)
-              return chat.say(CHANNEL, msg)
+              if (msg) {
+                // new moment used here, in case wait time for msg construction
+                // takes long (e.g. due to await)
+                fs.appendFileSync(dateFilename, `[${moment().format()}] <BOT_${BOT_USER}> ${msg}\n`)
+                return chat.say(CHANNEL, msg)
+              }
             } else if (!['PONG', 'USERSTATE', 'GLOBALUSERSTATE'].includes(command)) {
               // logs for joins, parts, etc.
               fs.appendFileSync(dateFilename, `==> ${command} ${username} ${message || ''}\n`)
