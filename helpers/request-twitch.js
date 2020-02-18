@@ -1,4 +1,5 @@
 const fs = require('fs')
+const moment = require('moment')
 const fetch = require('node-fetch')
 const TwitchJs = require('twitch-js').default
 const qs = require('qs')
@@ -103,9 +104,41 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
       username: BOT_USER
     })
     const users = await api.get('users', { version: 'helix', search: { login: BOT_USER } })
-    const subs = await api.get('subscriptions', { version: 'helix', search: { broadcaster_id: users.data[0].id } })
+    const user = users.data[0].id
+
+    const subsResponse = await api.get(`channels/${user}/subscriptions`, {
+      version: 'kraken',
+      search: {
+        direction: 'asc',
+        limit: 5
+      }
+    })
+
+    const bitsLeaderboardAllTimeResponse = await api.get('bits/leaderboard', { version: 'helix' })
+    const bitsLeaderboardMonthResponse = await api.get('bits/leaderboard', {
+      version: 'helix',
+      search: {
+        period: 'month',
+        started_at: moment().startOf('month').format()
+      }
+    })
+    const bitsLeaderboard = {
+      alltime: bitsLeaderboardAllTimeResponse.data,
+      month: bitsLeaderboardMonthResponse.data
+    }
+
+    const followersResponse = await api.get(`channels/${user}/follows`, {
+      version: 'kraken',
+      search: {
+        directions: 'asc',
+        limit: 5
+      }
+    })
+
     data = {
-      subs
+      subscribers: subsResponse.subscriptions,
+      bitsLeaderboard,
+      followers: followersResponse.follows
     }
   } catch (e) {
     console.log('==> Request twitch getAllStats api fetch error', e)
