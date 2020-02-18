@@ -8,8 +8,13 @@ module.exports = ({ startTime }) => {
 
     const charity = "Any donations I net from this channel will be sent off to the San Francisco-Marin Food Bank. You can also donate directly to them through the link at the bottom of the channel notes."
 
-    const rawCounterData = fs.readFileSync(`./${COUNTER}.json`)
-    const dict = JSON.parse(rawCounterData)
+    let dict
+    try {
+      dict = JSON.parse(fs.readFileSync(`./${COUNTER}.json`))
+    } catch (e) {
+      console.log('** error parsing counter (probably) in internal-stats json endpoint. continuing with empty dict {}.', e)
+      dict = {}
+    }
     const alltime = []
     const month = []
     const week = []
