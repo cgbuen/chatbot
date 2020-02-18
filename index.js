@@ -21,7 +21,7 @@ app.get('/callback-spotify', initSpotify.callback)
 app.get('/callback-twitch', initTwitch.callback)
 app.get('/spotify.json', require('./endpoints/json-spotify'))
 app.get('/twitch.json', require('./endpoints/json-twitch'))
-app.get('/internal-stats.json', require('./endpoints/json-internal-stats'))
+app.get('/internal-stats.json', require('./endpoints/json-internal-stats')( { startTime }))
 app.get('/nintendo.json', require('./endpoints/json-nintendo'))
 app.get('/chat', require('./endpoints/chat')({ startTime }))
 
