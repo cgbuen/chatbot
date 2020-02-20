@@ -3,6 +3,7 @@ const requestSpotify = require('../helpers/request-spotify')
 const { TOKEN_STORE } = require('../vars')
 
 module.exports = async (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*')
   const playingResponse = await requestSpotify.currentlyPlaying(fs.readFileSync(`./${TOKEN_STORE}/spotify-access`, 'utf8').trim())
   const playing = {
     artists: (playingResponse.item.artists && playingResponse.item.artists.map(item => item.name).join(', ')) || 'n/a',
