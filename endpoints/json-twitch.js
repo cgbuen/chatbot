@@ -1,6 +1,6 @@
 const fs = require('fs')
 const requestTwitch = require('../helpers/request-twitch')
-const { TOKEN_STORE } = require('../vars')
+const { CHANNEL, TOKEN_STORE } = require('../vars')
 
 module.exports = async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
     subs,
     bits,
     output_followers: `Latest Followers: ${followers.map((x, i) => `${i + 1}. ${x.user.displayName}`).join(', ')}`,
-    output_subs: `Latest New Subscribers: ${subs.map((x, i) => `${i + 1}. ${x.user.displayName}`).join(', ')}`,
+    output_subs: `Latest New Subscribers: ${subs.filter(x => x.user.displayName !== CHANNEL).map((x, i) => `${i + 1}. ${x.user.displayName}`).join(', ')}`,
     output_bits: {
       alltime: `Bit Leaders (All-Time): ${bits.alltime.map((x, i) => `${i + 1}. ${x.userName} (${x.score})`).join(', ')}`,
       month: `Bit Leaders (Month): ${bits.month.map((x, i) => `${i + 1}. ${x.userName} (${x.score})`).join(', ') || '1. No one'}`,

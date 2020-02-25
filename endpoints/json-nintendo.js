@@ -107,17 +107,17 @@ module.exports = async (req, res) => {
         head: `
           Current Headgear: ${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity)}).
           Main: ${playerInfo.player.head_skills.main.name}.
-          Subs: ${playerInfo.player.head_skills.subs.map(x => x.name).join(', ')}.
+          Subs: ${playerInfo.player.head_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name).join(', ')}.
         `,
         clothes: `
           Current Clothes: ${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity)}).
           Main: ${playerInfo.player.clothes_skills.main.name}.
-          Subs: ${playerInfo.player.clothes_skills.subs.map(x => x.name).join(', ')}.
+          Subs: ${playerInfo.player.clothes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name).join(', ')}.
         `,
         shoes: `
           Current Shoes: ${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity)}).
           Main: ${playerInfo.player.shoes_skills.main.name}.
-          Subs: ${playerInfo.player.shoes_skills.subs.map(x => x.name).join(', ')}.
+          Subs: ${playerInfo.player.shoes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name).join(', ')}.
         `,
       },
     }
