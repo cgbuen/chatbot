@@ -6,7 +6,7 @@ module.exports = ({ startTime }) => {
   return (req, res) => {
     res.header('Access-Control-Allow-Origin', '*')
 
-    const charity = "Any donations I net from this channel will be sent off to the San Francisco-Marin Food Bank. You can also donate directly to them through the link at the bottom of the channel notes."
+    const charity = "Donations to this channel will be sent off to the San Francisco-Marin Food Bank. You can also donate directly to them through the link at the bottom of the channel notes."
 
     let dict
     try {
@@ -40,6 +40,12 @@ module.exports = ({ startTime }) => {
       week: week.sort(sortByCount).slice(0, 5)
     }
 
+    const output_chrissucks = {
+      alltime: `!chrissucks Leaders (All-Time): ${chrissucks.alltime.map((x, i) => `${i + 1}. ${x.name} (${x.count})`).join(', ')}`,
+      month: `!chrissucks Leaders (Month): ${chrissucks.month.map((x, i) => `${i + 1}. ${x.name} (${x.count})`).join(', ') || '1. No one' }`,
+      week: `!chrissucks Leaders (Week) : ${chrissucks.week.map((x, i) => `${i + 1}. ${x.name} (${x.count})`).join(', ') || '1. No one' }`,
+    }
+
     const currTime = moment()
     const duration = moment.duration(currTime.diff(startTime))
     let uptime = `${duration.get('minutes')}m ${duration.get('seconds')}s`
@@ -51,7 +57,10 @@ module.exports = ({ startTime }) => {
     const data = {
       charity,
       chrissucks,
-      uptime
+      uptime,
+      output_charity: charity,
+      output_chrissucks,
+      output_uptime: `Stream up for ${uptime}`
     }
     return res.send(data)
   }

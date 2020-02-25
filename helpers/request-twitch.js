@@ -114,7 +114,7 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
     const subscriptionsResponse = await api.get(`channels/${user}/subscriptions`, {
       version: 'kraken',
       search: {
-        direction: 'asc',
+        direction: 'desc',
         limit: 5
       }
     })
