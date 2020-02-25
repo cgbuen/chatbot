@@ -2,6 +2,7 @@ const fs = require('fs')
 const requestNintendo = require('../helpers/request-nintendo')
 const moment = require('moment')
 const { TOKEN_STORE } = require('../vars')
+const nFormatter = require('../helpers/nFormatter')
 
 module.exports = async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
@@ -51,20 +52,27 @@ module.exports = async (req, res) => {
       }
     }
 
+    const rankRainmaker = determineRank('udemae_rainmaker')
+    const rankSplatZones = determineRank('udemae_zones')
+    const rankClamBlitz = determineRank('udemae_clam')
+    const rankTowerControl  = determineRank('udemae_tower')
+
+    const currentWeaponStats = {
+      ...playerInfo.weapon_stats[playerInfo.player.weapon.id],
+      weapon: undefined
+    }
+
     nintendoStats = {
       ranks: {
-        rm: determineRank('udemae_rainmaker'),
-        sz: determineRank('udemae_zones'),
-        cb: determineRank('udemae_clam'),
-        tc: determineRank('udemae_tower')
+        rankRainmaker,
+        rankSplatZones,
+        rankClamBlitz,
+        rankTowerControl
       },
       gear: {
         weapon: {
           ...playerInfo.player.weapon,
-          stats: {
-            ...playerInfo.weapon_stats[playerInfo.player.weapon.id],
-            weapon: undefined
-          },
+          stats: currentWeaponStats,
         },
         head: {
           ...playerInfo.player.head,
@@ -80,15 +88,50 @@ module.exports = async (req, res) => {
         }
       },
       lifetimeWL: playerInfo.win_count && `${playerInfo.win_count}-${playerInfo.lose_count}`,
-      weaponStatsMostWins: weaponArray.sort((x, y) => y.win_count - x.win_count).map(x => ({ name: x.weapon.name, win_count: x.win_count })),
-      weaponStatsMostLosses: weaponArray.sort((x, y) => y.lose_count - x.lose_count).map(x => ({ name: x.weapon.name, lose_count: x.lose_count })),
-      weaponStatsHighestRatio: weaponArray.sort((x, y) => (y.win_count/y.lose_count) - (x.win_count/x.lose_count)).map(x => ({ name: x.weapon.name, ratio: x.win_count/(x.win_count + x.lose_count), record: `${x.win_count}-${x.lose_count}` })),
-      weaponStatsMostGames: weaponArray.sort((x, y) => (y.win_count + y.lose_count) - (x.win_count + x.lose_count)).map(x => ({ name: x.weapon.name, games_played: x.win_count + x.lose_count })),
-      weaponStatsMostTurf: weaponArray.sort((x, y) => y.total_paint_point - x.total_paint_point).map(x => ({ name: x.weapon.name, total_paint_point: x.total_paint_point })),
-      weaponStatsLastUsed: weaponArray.sort((x, y) => y.last_use_time - x.last_use_time).map(x => ({ name: x.weapon.name, last_use_time: moment(x.last_use_time).format() })),
-      weaponStatsWinMeter: weaponArray.sort((x, y) => y.win_meter - x.win_meter).map(x => ({ name: x.weapon.name, win_meter: x.win_meter })),
+      weaponStats: {
+        wins: weaponArray.sort((x, y) => y.win_count - x.win_count).map(x => ({ name: x.weapon.name, win_count: x.win_count })),
+        losses: weaponArray.sort((x, y) => y.lose_count - x.lose_count).map(x => ({ name: x.weapon.name, lose_count: x.lose_count })),
+        ratio: weaponArray.sort((x, y) => (y.win_count/y.lose_count) - (x.win_count/x.lose_count)).map(x => ({ name: x.weapon.name, ratio: x.win_count/(x.win_count + x.lose_count), record: `${x.win_count}-${x.lose_count}`, games: x.win_count + x.lose_count })),
+        games: weaponArray.sort((x, y) => (y.win_count + y.lose_count) - (x.win_count + x.lose_count)).map(x => ({ name: x.weapon.name, games_played: x.win_count + x.lose_count })),
+        turf: weaponArray.sort((x, y) => y.total_paint_point - x.total_paint_point).map(x => ({ name: x.weapon.name, total_paint_point: x.total_paint_point })),
+        recent: weaponArray.sort((x, y) => y.last_use_time - x.last_use_time).map(x => ({ name: x.weapon.name, last_use_time: moment(x.last_use_time).format() })),
+        meter: weaponArray.sort((x, y) => y.win_meter - x.win_meter).map(x => ({ name: x.weapon.name, win_meter: x.win_meter })),
+      },
+      output_ranks: `Ranks: Rainmaker ${rankRainmaker}, Splat Zones ${rankSplatZones}, Clam Blitz ${rankClamBlitz}, Tower Control ${rankTowerControl}`,
+      output_gear: {
+        weapon: `
+          Current Weapon: ${playerInfo.player.weapon.name}.
+          Weapon Record: ${currentWeaponStats.win_count}-${currentWeaponStats.lose_count}.
+          Turf Points: ${nFormatter(currentWeaponStats.total_paint_point, 2)}p.
+        `,
+        head: `
+          Current Headgear: ${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity)}).
+          Main: ${playerInfo.player.head_skills.main.name}.
+          Subs: ${playerInfo.player.head_skills.subs.map(x => x.name).join(', ')}.
+        `,
+        clothes: `
+          Current Clothes: ${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity)}).
+          Main: ${playerInfo.player.clothes_skills.main.name}.
+          Subs: ${playerInfo.player.clothes_skills.subs.map(x => x.name).join(', ')}.
+        `,
+        shoes: `
+          Current Shoes: ${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity)}).
+          Main: ${playerInfo.player.shoes_skills.main.name}.
+          Subs: ${playerInfo.player.shoes_skills.subs.map(x => x.name).join(', ')}.
+        `,
+      },
+    }
+    nintendoStats.output_lifetimeWL = `Lifetime W-L: ${nintendoStats.lifetimeWL}`
+    nintendoStats.output_weaponStats = {
+      wins: `Most Wins Overall by Weapon: ${nintendoStats.weaponStats.wins.slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${x.win_count})`).join(', ')}`,
+      losses: `Most Losses Overall by Weapon: ${nintendoStats.weaponStats.losses.slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${x.lose_count})`).join(', ')}`,
+      ratio: `Best W-L Ratio by Weapon (min. 20 games): ${nintendoStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${x.record}, ${x.ratio})`).join(', ')}`,
+      games: `Most Games Overall by Weapon: ${nintendoStats.weaponStats.games.slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${x.games_played})`).join(', ')}`,
+      turf: `Most Turf Painted by Weapon: ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)}p)`).join(', ')}`,
+      recent: `Most Recently Used Weapon: ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${x.last_use_time})`).join(', ')}`
     }
   } catch (e) {
+    console.log('** Error retrieving nintendo stats', e)
     nintendoStats = {}
   }
   return res.send(nintendoStats)
