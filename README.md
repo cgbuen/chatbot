@@ -58,7 +58,7 @@ following format:
     module.exports = {
       BOT_USER: '[your bot's twitch handle]',
       CHANNEL: '[your channel]',
-      GAME_ID: '[your gaming id of choice]'
+      GAME_ID: '[your gaming id of choice]',
       SPOTIFY_CLIENT_ID: '[your spotify app's client_id]',
       SPOTIFY_CLIENT_SECRET: '[your spotify app's client_secret]',
       TWITCH_CLIENT_ID: '[your twitch app's client_id]',
