@@ -102,7 +102,7 @@ module.exports = async (req, res) => {
         weapon: `
           Current Weapon: ${playerInfo.player.weapon.name}.
           Weapon Record: ${currentWeaponStats.win_count}-${currentWeaponStats.lose_count}.
-          Turf Points: ${nFormatter(currentWeaponStats.total_paint_point, 2)}p.
+          Turf Points: ${nFormatter(currentWeaponStats.total_paint_point, 2)}.
         `,
         head: `
           Current Headgear: ${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity)}).
@@ -127,7 +127,7 @@ module.exports = async (req, res) => {
       losses: `Most Losses Overall by Weapon: ${nintendoStats.weaponStats.losses.slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${x.lose_count})`).join(', ')}`,
       ratio: `Best W-L Ratio by Weapon (min. 20 games): ${nintendoStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${x.record}, ${x.ratio})`).join(', ')}`,
       games: `Most Games Overall by Weapon: ${nintendoStats.weaponStats.games.slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${x.games_played})`).join(', ')}`,
-      turf: `Most Turf Painted by Weapon: ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)}p)`).join(', ')}`,
+      turf: `Most Turf Painted by Weapon: ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)})`).join(', ')}`,
       recent: `Most Recently Used Weapon: ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => `${i + 1}. ${x.name} (${x.last_use_time})`).join(', ')}`
     }
   } catch (e) {
