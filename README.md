@@ -4,10 +4,13 @@ My locally-running Twitch chatbot for some simple commands, including game ID
 display, currently-playing Spotify song, shoutouts with real-user checking, and
 a fun leaderboard chat game. It also logs the chat.
 
+This runs on port 3000.
+
 This also has evolved into a means by which to serve API endpoints, since much
 of the data needed for the chatbot to respond with can be reused into Express
 responses that can be consumed by _another_ locally running server for a web
 application. This, for example, could be useful for a broadcast overlay.
+([Here](https://github.com/cgbuen/ticker) is the corresponding one that I use.)
 
 The endpoints gather data from the following sources:
 
@@ -17,7 +20,7 @@ The endpoints gather data from the following sources:
 - Your own local machine (for chat game stats, uptime, and other possible
   hardcoded data)
 
-## Register Developer Apps
+## Before Installing: Register Developer Apps
 
 One benefit of this project is that it allows you to not have to depend on your
 own machine's Spotify desktop client application when looking for the song
@@ -32,7 +35,7 @@ to what you've made yourself, rather than someone else's live developer app.
 
 Similar functionality has been added for the new Twitch API, which also uses
 OAuth 2.0. The purpose here is solely for spitting out tokens for gathering the
-followers / bits / endpoint data.
+followers / bits / subs data.
 
 1. Register as a [Spotify Developer](https://developer.spotify.com/dashboard/login).
 2. Create a project by clicking the "Create a Client ID" and filling out all
@@ -48,7 +51,7 @@ followers / bits / endpoint data.
 I'm using node 8.16.0 and npm 5.10.0, but this is probably simple enough to work
 with a lot of different versions.
 
-    npm install
+    npm ci
 
 ## Configure
 
@@ -71,9 +74,26 @@ following format:
 ### Notes
 
 - `BOT_USER` can be the same handle you use for your channel (`CHANNEL`).
-- `GAME_ID` example: Nintendo Switch Friend Code
-- Write your `TOKEN_STORE` value into a new line in _.gitignore_
+- `GAME_ID` example: Nintendo Switch Friend Code.
+- The default `COUNTER` (i.e. what's in _.gitignore_) is "stats".
+- Write your `TOKEN_STORE` value into a new line in _.gitignore_. The default
+  (i.e. what's in _.gitignore_) is "token-store".
 
 ## Run
 
     npm start
+
+### Notes
+
+You'll have to hit the following endpoints if you're running this the first
+time. These retrieve your proper access and refresh tokens and store them into
+your `TOKEN_STORE` directory.
+
+- [Twitch token initialization](http://localhost:3000/inittoken-twitch) (auto-opens on first load)
+- [Spotify token initialization](http://localhost:3000/inittoken-spotify)
+
+Additionally, you'll need to use an MitM proxy (e.g. Charles) to fetch your
+`iksm_session` cookie token, and then place that value into a new file named
+_nintendo-access_, which is placed in your `TOKEN_STORE` directory. This will
+continually need to be done every three calendar days, but is best off being
+done before each stream.

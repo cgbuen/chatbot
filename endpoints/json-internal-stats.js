@@ -1,6 +1,7 @@
 const fs = require('fs')
 const moment = require('moment')
 const { COUNTER } = require('../vars')
+const unbreak = require('../helpers/unbreak')
 
 module.exports = ({ startTime }) => {
   return (req, res) => {
@@ -41,9 +42,9 @@ module.exports = ({ startTime }) => {
     }
 
     const output_chrissucks = {
-      alltime: `!chrissucks Leaders (All-Time): ${chrissucks.alltime.map((x, i) => `${i + 1}. ${x.name} (${x.count})`).join(', ')}`,
-      month: `!chrissucks Leaders (Month): ${chrissucks.month.map((x, i) => `${i + 1}. ${x.name} (${x.count})`).join(', ') || '1. No one' }`,
-      week: `!chrissucks Leaders (Week) : ${chrissucks.week.map((x, i) => `${i + 1}. ${x.name} (${x.count})`).join(', ') || '1. No one' }`,
+      alltime: `[!chrissucks Leaders (All-Time)] ${chrissucks.alltime.map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.count})`)).join(', ')}`,
+      month: `[!chrissucks Leaders (Month)] ${chrissucks.month.map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.count})`)).join(', ') || '1. No one' }`,
+      week: `[!chrissucks Leaders (Week)] ${chrissucks.week.map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.count})`)).join(', ') || '1. No one' }`,
     }
 
     const currTime = moment()
@@ -58,9 +59,9 @@ module.exports = ({ startTime }) => {
       charity,
       chrissucks,
       uptime,
-      output_charity: charity,
+      output_charity: `[Charity] ${charity}`,
       output_chrissucks,
-      output_uptime: `Stream up for ${uptime}`
+      output_uptime: `[Uptime] Stream up for ${uptime}`
     }
     return res.send(data)
   }

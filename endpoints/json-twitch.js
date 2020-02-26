@@ -1,6 +1,7 @@
 const fs = require('fs')
 const requestTwitch = require('../helpers/request-twitch')
-const { TOKEN_STORE } = require('../vars')
+const { CHANNEL, TOKEN_STORE } = require('../vars')
+const unbreak = require('../helpers/unbreak')
 
 module.exports = async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
@@ -16,12 +17,12 @@ module.exports = async (req, res) => {
     followers,
     subs,
     bits,
-    output_followers: `Latest Followers: ${followers.map((x, i) => `${i + 1}. ${x.user.displayName}`).join(', ')}`,
-    output_subs: `Latest New Subscribers: ${subs.map((x, i) => `${i + 1}. ${x.user.displayName}`).join(', ')}`,
+    output_followers: `[Latest Followers] ${followers.map((x, i) => unbreak(`${i + 1}. ${x.user.displayName}`)).join(', ')}`,
+    output_subs: `[Newest Subscribers] ${subs.filter(x => x.user.displayName !== CHANNEL).map((x, i) => unbreak(`${i + 1}. ${x.user.displayName}`)).join(', ')}`,
     output_bits: {
-      alltime: `Bit Leaders (All-Time): ${bits.alltime.map((x, i) => `${i + 1}. ${x.userName} (${x.score})`).join(', ')}`,
-      month: `Bit Leaders (Month): ${bits.month.map((x, i) => `${i + 1}. ${x.userName} (${x.score})`).join(', ') || '1. No one'}`,
-      week: `Bit Leaders (Week): ${bits.week.map((x, i) => `${i + 1}. ${x.userName} (${x.score})`).join(', ') || '1. No one'}`,
+      alltime: `[Bit Leaders (All-Time)] ${bits.alltime.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).join(', ')}`,
+      month: `[Bit Leaders (Month)] ${bits.month.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).join(', ') || '1. No one'}`,
+      week: `[Bit Leaders (Week)] ${bits.week.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).join(', ') || '1. No one'}`,
     }
   }
   return res.send(twitchStats)
