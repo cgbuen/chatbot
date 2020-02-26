@@ -98,43 +98,45 @@ module.exports = async (req, res) => {
         recent: weaponArray.sort((x, y) => y.last_use_time - x.last_use_time).map(x => ({ name: x.weapon.name, last_use_time: moment(x.last_use_time*1000).format() })),
         meter: weaponArray.sort((x, y) => y.win_meter - x.win_meter).map(x => ({ name: x.weapon.name, win_meter: x.win_meter })),
       },
-      output_ranks: `Ranks: ${[
-        `Rainmaker ${rankRainmaker}`,
-        `Splat Zones ${rankSplatZones}`,
-        `Clam Blitz ${rankClamBlitz}`,
-        `Tower Control ${rankTowerControl}li
-        `].map(unbreak).join(', ')}`,
+      output_ranks: `[Ranks] ${
+        [
+          `Rainmaker ${rankRainmaker}`,
+          `Splat Zones ${rankSplatZones}`,
+          `Clam Blitz ${rankClamBlitz}`,
+          `Tower Control ${rankTowerControl}`
+        ].map(unbreak).join(', ')
+      }`,
       output_gear: {
         weapon: [
-          `Current Weapon: ${playerInfo.player.weapon.name.replace(/\s+/g, '\u00A0')}.`,
-          `Weapon Record: ${currentWeaponStats.win_count}-${currentWeaponStats.lose_count}.`,
-          `Turf Points: ${nFormatter(currentWeaponStats.total_paint_point, 2)}.`
+          `[Current weapon] ${playerInfo.player.weapon.name.replace(/\s+/g, '\u00A0')}`,
+          `(W-L: ${currentWeaponStats.win_count}-${currentWeaponStats.lose_count} /`,
+          `turf inked: ${nFormatter(currentWeaponStats.total_paint_point, 2)})`
         ].map(unbreak).join(' '),
         head: [
-          `Current Headgear: ${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity)}).`,
-          `Main: ${playerInfo.player.head_skills.main.name}.`,
-          `Subs: ${playerInfo.player.head_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name).join(', ')}.`
+          `[Current headgear] ${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity)})`,
+          `(main: ${playerInfo.player.head_skills.main.name.replace(/[\(\)]/g, '')} /`,
+          `subs: ${playerInfo.player.head_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
         ].map(unbreak).join(' '),
         clothes: [
-          `Current Clothes: ${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity)}).`,
-          `Main: ${playerInfo.player.clothes_skills.main.name}.`,
-          `Subs: ${playerInfo.player.clothes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name).join(', ')}.`
+          `[Current clothes] ${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity)})`,
+          `(main: ${playerInfo.player.clothes_skills.main.name.replace(/[\(\)]/g, '')} /`,
+          `subs: ${playerInfo.player.clothes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
         ].map(unbreak).join(' '),
         shoes: [
-          `Current Shoes: ${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity)}).`,
-          `Main: ${playerInfo.player.shoes_skills.main.name}.`,
-          `Subs: ${playerInfo.player.shoes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name).join(', ')}.`
+          `[Current shoes] ${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity)})`,
+          `(main: ${playerInfo.player.shoes_skills.main.name.replace(/[\(\)]/g, '')} /`,
+          `subs: ${playerInfo.player.shoes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
         ].map(unbreak).join(' '),
       },
     }
     nintendoStats.output_lifetimeWL = unbreak(`Lifetime W-L: ${nintendoStats.lifetimeWL}`)
     nintendoStats.output_weaponStats = {
-      wins: `Most Wins (by weapon): ${nintendoStats.weaponStats.wins.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.win_count})`)).join(', ')}`,
-      losses: `Most Losses (by weapon): ${nintendoStats.weaponStats.losses.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.lose_count})`)).join(', ')}`,
-      ratio: `Best W-L Ratio (by weapon, min. 20 games): ${nintendoStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
-      games: `Most Games Played (by weapon): ${nintendoStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.games_played})`)).join(', ')}`,
-      turf: `Most Turf Painted (by weapon): ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
-      recent: `Most Recently Used Weapon: ${nintendoStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.last_use_time})`)).join(', ')}`
+      wins: `[Wins] ${nintendoStats.weaponStats.wins.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.win_count})`)).join(', ')}`,
+      losses: `[Losses] ${nintendoStats.weaponStats.losses.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.lose_count})`)).join(', ')}`,
+      ratio: `[W-L ratio (min. 20 games): ${nintendoStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
+      games: `[Games played] ${nintendoStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.games_played})`)).join(', ')}`,
+      turf: `[Turf inked] ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
+      recent: `[Most recently used] ${nintendoStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.last_use_time})`)).join(', ')}`
     }
   } catch (e) {
     console.log('** Error retrieving nintendo stats', e)

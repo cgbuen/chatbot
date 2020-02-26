@@ -34,6 +34,6 @@ module.exports = async (req, res) => {
     console.log('==> playingResponse not provided.')
     msg = MSGS.BROKEN_SPOTIFY
   }
-  playing.output_currentlyPlaying = `Currently Playing: ${msg}`
+  playing.output_currentlyPlaying = `[Currently playing] ${msg}`
   return res.send(playing)
 }
