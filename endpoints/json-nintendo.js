@@ -129,11 +129,11 @@ module.exports = async (req, res) => {
         ].map(unbreak).join(' '),
       },
     }
-    nintendoStats.output_lifetimeWL = unbreak(`Lifetime W-L: ${nintendoStats.lifetimeWL}`)
+    nintendoStats.output_lifetimeWL = unbreak(`[Lifetime W-L] ${nintendoStats.lifetimeWL}`)
     nintendoStats.output_weaponStats = {
       wins: `[Wins] ${nintendoStats.weaponStats.wins.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.win_count})`)).join(', ')}`,
       losses: `[Losses] ${nintendoStats.weaponStats.losses.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.lose_count})`)).join(', ')}`,
-      ratio: `[W-L ratio (min. 20 games): ${nintendoStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
+      ratio: `[W-L ratio (min. 20 games)] ${nintendoStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
       games: `[Games played] ${nintendoStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.games_played})`)).join(', ')}`,
       turf: `[Turf inked] ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
       recent: `[Most recently used] ${nintendoStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.last_use_time})`)).join(', ')}`
