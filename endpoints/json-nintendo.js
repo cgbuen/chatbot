@@ -108,24 +108,24 @@ module.exports = async (req, res) => {
       }`,
       output_gear: {
         weapon: [
-          `[Current weapon] ${playerInfo.player.weapon.name.replace(/\s+/g, '\u00A0')}`,
+          `[Current Weapon] ${playerInfo.player.weapon.name.replace(/\s+/g, '\u00A0')}`,
           `(W-L: ${currentWeaponStats.win_count}-${currentWeaponStats.lose_count} /`,
-          `turf inked: ${nFormatter(currentWeaponStats.total_paint_point, 2)})`
+          `Turf Inked: ${nFormatter(currentWeaponStats.total_paint_point, 2)})`
         ].map(unbreak).join(' '),
         head: [
-          `[Current headgear] ${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity)})`,
-          `(main: ${playerInfo.player.head_skills.main.name.replace(/[\(\)]/g, '')} /`,
-          `subs: ${playerInfo.player.head_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
+          `[Current Headgear] ${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity)})`,
+          `(Main: ${playerInfo.player.head_skills.main.name.replace(/[\(\)]/g, '')} /`,
+          `Subs: ${playerInfo.player.head_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
         ].map(unbreak).join(' '),
         clothes: [
-          `[Current clothes] ${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity)})`,
-          `(main: ${playerInfo.player.clothes_skills.main.name.replace(/[\(\)]/g, '')} /`,
-          `subs: ${playerInfo.player.clothes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
+          `[Current Clothes] ${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity)})`,
+          `(Main: ${playerInfo.player.clothes_skills.main.name.replace(/[\(\)]/g, '')} /`,
+          `Subs: ${playerInfo.player.clothes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
         ].map(unbreak).join(' '),
         shoes: [
-          `[Current shoes] ${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity)})`,
-          `(main: ${playerInfo.player.shoes_skills.main.name.replace(/[\(\)]/g, '')} /`,
-          `subs: ${playerInfo.player.shoes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
+          `[Current Shoes] ${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity)})`,
+          `(Main: ${playerInfo.player.shoes_skills.main.name.replace(/[\(\)]/g, '')} /`,
+          `Subs: ${playerInfo.player.shoes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
         ].map(unbreak).join(' '),
       },
     }
@@ -133,10 +133,10 @@ module.exports = async (req, res) => {
     nintendoStats.output_weaponStats = {
       wins: `[Wins] ${nintendoStats.weaponStats.wins.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.win_count})`)).join(', ')}`,
       losses: `[Losses] ${nintendoStats.weaponStats.losses.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.lose_count})`)).join(', ')}`,
-      ratio: `[W-L ratio (min. 20 games)] ${nintendoStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
-      games: `[Games played] ${nintendoStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.games_played})`)).join(', ')}`,
-      turf: `[Turf inked] ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
-      recent: `[Most recently used] ${nintendoStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${moment(x.last_use_time).format('YYYY-MM-DD hh:mma')})`)).join(', ')}`
+      ratio: `[W-L Ratio (min. 20 games)] ${nintendoStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
+      games: `[Games Played] ${nintendoStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.games_played})`)).join(', ')}`,
+      turf: `[Turf Inked] ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
+      recent: `[Most Recently Used] ${nintendoStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${moment(x.last_use_time).format('YYYY-MM-DD hh:mma')})`)).join(', ')}`
     }
   } catch (e) {
     console.log('** Error retrieving nintendo stats', e)
