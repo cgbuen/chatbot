@@ -136,7 +136,7 @@ module.exports = async (req, res) => {
       ratio: `[W-L ratio (min. 20 games)] ${nintendoStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
       games: `[Games played] ${nintendoStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.games_played})`)).join(', ')}`,
       turf: `[Turf inked] ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
-      recent: `[Most recently used] ${nintendoStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.last_use_time})`)).join(', ')}`
+      recent: `[Most recently used] ${nintendoStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${moment(x.last_use_time).format('YYYY-MM-DD hh:mma')})`)).join(', ')}`
     }
   } catch (e) {
     console.log('** Error retrieving nintendo stats', e)
