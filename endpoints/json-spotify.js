@@ -13,12 +13,12 @@ module.exports = async (req, res) => {
   let msg
   if (playingResponse && playingResponse.error) {
     // if other error, just tell the user it's broken
-    console.log(`==> Miscellaneous error: ${playingResponse.error}`)
+    console.log(`--> Miscellaneous error: ${playingResponse.error}`)
     msg = MSGS.BROKEN_SPOTIFY
 
   } else if (playingResponse && playingResponse.is_playing && playingResponse.item && playingResponse.device) {
     // if you are playing something, display
-    console.log('==> Song currently playing.')
+    console.log('--> Song currently playing.')
     const artists = playing.artists = (playingResponse.item.artists && playingResponse.item.artists.map(item => item.name).join(', ')) || 'n/a'
     const title = playing.title = playingResponse.item.name || 'n/a'
     const album = playing.album = (playingResponse.item.album && playingResponse.item.album.name) || 'n/a'
@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
 
   } else if (playingResponse) {
     // if not playing anything, tell user you're not playing anything
-    console.log(`==> No song currently playing.${playingResponse.noSession ? ' (No current session.)' : ''}`)
+    console.log(`--> No song currently playing.${playingResponse.noSession ? ' (No current session.)' : ''}`)
     msg = MSGS.NOT_PLAYING
 
   } else {

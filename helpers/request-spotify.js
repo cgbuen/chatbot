@@ -74,6 +74,7 @@ const currentlyPlaying = async (accessToken, { retries = 3 } = {}) => {
     }
   }
   try {
+    console.log('--> Fetching Spotify playing data')
     const spotifyResponseCurrentlyPlaying = await fetch('https://api.spotify.com/v1/me/player', spotifyOptionsCurrentlyPlaying)
     if (spotifyResponseCurrentlyPlaying.statusText === 'OK') {
       console.log('** OK currently playing response data')
@@ -85,7 +86,7 @@ const currentlyPlaying = async (accessToken, { retries = 3 } = {}) => {
     } else {
       // other non-OK response seems to imply no active session, so fake a "not
       // playing" response
-      console.log('** non-OK currently playing response:', spotifyResponseCurrentlyPlaying)
+      console.log('** non-OK currently playing response')
       data = { is_playing: false, noSession: true }
     }
   } catch (e) {
@@ -122,7 +123,7 @@ const devices = async (accessToken, { retries = 3 } = {}) => {
     } else {
       // non-OK response seems to imply no active session, so fake a "not
       // playing" response
-      console.log('** non-OK device response:', spotifyResponseDevices)
+      console.log('** non-OK device response')
       data = []
     }
   } catch (e) {
