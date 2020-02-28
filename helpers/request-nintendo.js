@@ -16,8 +16,10 @@ const getRecords = async (accessToken) => {
   const yearMonthNext = `${nextMonth.format('YY')}${nextMonth.format('MM')}`
 
   try {
+    console.log('--> Fetching Splatoon records')
     const rawRecordsResponse = await fetch('https://app.splatoon2.nintendo.net/api/records', requestOptions)
     recordsResponse = await rawRecordsResponse.json()
+    console.log('--> Fetching Splatoon X Leaderboard')
     const rawXLeaderboardResponse = await fetch(`https://app.splatoon2.nintendo.net/api/x_power_ranking/${yearMonthNow}01T00_${yearMonthNext}01T00/summary`, requestOptions)
     xLeaderboardResponse = await rawXLeaderboardResponse.json()
   } catch (e) {

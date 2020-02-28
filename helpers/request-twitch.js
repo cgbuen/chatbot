@@ -102,6 +102,7 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
       token: accessToken,
       username: BOT_USER
     })
+    console.log('--> Beginning sequential Twitch fetches: 1. self, 2. followers, 3. subs, 4-6. bits (alltime/month/week)')
     const users = await api.get('users', { version: 'helix', search: { login: BOT_USER } })
     const user = users.data[0].id
     const followersResponse = await api.get(`channels/${user}/follows`, {
