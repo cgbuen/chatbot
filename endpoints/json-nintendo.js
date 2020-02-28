@@ -58,11 +58,6 @@ module.exports = async (req, res) => {
     const rankClamBlitz = determineRank('udemae_clam')
     const rankTowerControl  = determineRank('udemae_tower')
 
-    const currentWeaponStats = {
-      ...playerInfo.weapon_stats[playerInfo.player.weapon.id],
-      weapon: undefined
-    }
-
     nintendoStats = {
       ranks: {
         rankRainmaker,
@@ -73,7 +68,10 @@ module.exports = async (req, res) => {
       gear: {
         weapon: {
           ...playerInfo.player.weapon,
-          stats: currentWeaponStats,
+          stats: {
+            ...playerInfo.weapon_stats[playerInfo.player.weapon.id],
+            weapon: undefined
+          }
         },
         head: {
           ...playerInfo.player.head,
@@ -90,44 +88,64 @@ module.exports = async (req, res) => {
       },
       lifetimeWL: playerInfo.win_count && `${playerInfo.win_count}-${playerInfo.lose_count}`,
       weaponStats: {
-        wins: weaponArray.sort((x, y) => y.win_count - x.win_count).map(x => ({ name: x.weapon.name, win_count: x.win_count })),
-        losses: weaponArray.sort((x, y) => y.lose_count - x.lose_count).map(x => ({ name: x.weapon.name, lose_count: x.lose_count })),
-        ratio: weaponArray.sort((x, y) => (y.win_count/y.lose_count) - (x.win_count/x.lose_count)).map(x => ({ name: x.weapon.name, ratio: x.win_count/(x.win_count + x.lose_count), record: `${x.win_count}-${x.lose_count}`, games: x.win_count + x.lose_count })),
-        games: weaponArray.sort((x, y) => (y.win_count + y.lose_count) - (x.win_count + x.lose_count)).map(x => ({ name: x.weapon.name, games_played: x.win_count + x.lose_count })),
-        turf: weaponArray.sort((x, y) => y.total_paint_point - x.total_paint_point).map(x => ({ name: x.weapon.name, total_paint_point: x.total_paint_point })),
-        recent: weaponArray.sort((x, y) => y.last_use_time - x.last_use_time).map(x => ({ name: x.weapon.name, last_use_time: moment(x.last_use_time*1000).format() })),
-        meter: weaponArray.sort((x, y) => y.win_meter - x.win_meter).map(x => ({ name: x.weapon.name, win_meter: x.win_meter })),
+        wins: weaponArray
+          .sort((x, y) => y.win_count - x.win_count)
+          .map(x => ({ name: x.weapon.name, win_count: x.win_count })),
+        losses: weaponArray
+          .sort((x, y) => y.lose_count - x.lose_count)
+          .map(x => ({ name: x.weapon.name, lose_count: x.lose_count })),
+        ratio: weaponArray
+          .sort((x, y) => (y.win_count/y.lose_count) - (x.win_count/x.lose_count))
+          .map(x => ({ name: x.weapon.name, ratio: x.win_count/(x.win_count + x.lose_count), record: `${x.win_count}-${x.lose_count}`, games: x.win_count + x.lose_count })),
+        games: weaponArray
+          .sort((x, y) => (y.win_count + y.lose_count) - (x.win_count + x.lose_count))
+          .map(x => ({ name: x.weapon.name, games_played: x.win_count + x.lose_count })),
+        turf: weaponArray
+          .sort((x, y) => y.total_paint_point - x.total_paint_point)
+          .map(x => ({ name: x.weapon.name, total_paint_point: x.total_paint_point })),
+        recent: weaponArray
+          .sort((x, y) => y.last_use_time - x.last_use_time)
+          .map(x => ({ name: x.weapon.name, last_use_time: moment(x.last_use_time*1000).format() })),
+        meter: weaponArray
+          .sort((x, y) => y.win_meter - x.win_meter)
+          .map(x => ({ name: x.weapon.name, win_meter: x.win_meter })),
       },
-      output_ranks: `[Ranks] ${
-        [
-          `Rainmaker ${rankRainmaker}`,
-          `Splat Zones ${rankSplatZones}`,
-          `Clam Blitz ${rankClamBlitz}`,
-          `Tower Control ${rankTowerControl}`
-        ].map(unbreak).join(', ')
-      }`,
-      output_gear: {
-        weapon: [
-          `[Current Weapon] ${playerInfo.player.weapon.name.replace(/\s+/g, '\u00A0')}`,
-          `(W-L: ${currentWeaponStats.win_count}-${currentWeaponStats.lose_count} /`,
-          `Turf Inked: ${nFormatter(currentWeaponStats.total_paint_point, 2)})`
-        ].map(unbreak).join(' '),
-        head: [
-          `[Current Headgear] ${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity)})`,
-          `(Main: ${playerInfo.player.head_skills.main.name.replace(/[\(\)]/g, '')} /`,
-          `Subs: ${playerInfo.player.head_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
-        ].map(unbreak).join(' '),
-        clothes: [
-          `[Current Clothes] ${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity)})`,
-          `(Main: ${playerInfo.player.clothes_skills.main.name.replace(/[\(\)]/g, '')} /`,
-          `Subs: ${playerInfo.player.clothes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
-        ].map(unbreak).join(' '),
-        shoes: [
-          `[Current Shoes] ${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity)})`,
-          `(Main: ${playerInfo.player.shoes_skills.main.name.replace(/[\(\)]/g, '')} /`,
-          `Subs: ${playerInfo.player.shoes_skills.subs.filter(x => x.name !== 'question mark').map(x => x.name.replace(/[\(\)]/g, '')).join(', ')})`
-        ].map(unbreak).join(' '),
-      },
+    }
+
+
+    const isNotQuestionMark = x => (x && x.name && x.name !== 'question mark')
+    const removeParen = x => (x.name || '').replace(/[\(\)]/g, '')
+
+    // append all output_ values based on what's nintendoStats already has
+    nintendoStats.output_ranks = `[Ranks] ${
+      [
+        `Rainmaker: ${nintendoStats.ranks.rankRainmaker}`,
+        `Splat Zones: ${nintendoStats.ranks.rankSplatZones}`,
+        `Clam Blitz: ${nintendoStats.ranks.rankClamBlitz}`,
+        `Tower Control: ${nintendoStats.ranks.rankTowerControl}`
+      ].map(unbreak).join(', ')
+    }`
+    nintendoStats.output_gear = {
+      weapon: [
+        `[Current Weapon] ${playerInfo.player.weapon.name.replace(/\s+/g, '\u00A0')}`,
+        `(W-L: ${nintendoStats.gear.weapon.stats.win_count}-${nintendoStats.gear.weapon.stats.lose_count} /`,
+        `Turf Inked: ${nFormatter(nintendoStats.gear.weapon.stats.total_paint_point, 2)})`
+      ].map(unbreak).join(' '),
+      head: [
+        `[Current Headgear] ${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity + 1)})`,
+        `(Main: ${removeParen(playerInfo.player.head_skills.main.name)} /`,
+        `Subs: ${playerInfo.player.head_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ')})`
+      ].map(unbreak).join(' '),
+      clothes: [
+        `[Current Clothes] ${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity + 1)})`,
+        `(Main: ${removeParen(playerInfo.player.clothes_skills.main.name)} /`,
+        `Subs: ${playerInfo.player.clothes_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ')})`
+      ].map(unbreak).join(' '),
+      shoes: [
+        `[Current Shoes] ${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity + 1)})`,
+        `(Main: ${removeParen(playerInfo.player.shoes_skills.main.name)} /`,
+        `Subs: ${playerInfo.player.shoes_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ')})`
+      ].map(unbreak).join(' '),
     }
     nintendoStats.output_lifetimeWL = unbreak(`[Lifetime W-L] ${nintendoStats.lifetimeWL}`)
     nintendoStats.output_weaponStats = {
