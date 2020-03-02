@@ -10,6 +10,7 @@ const getRecords = async (accessToken) => {
   }
   let recordsResponse
   let xLeaderboardResponse
+  let salmonRunResponse
   const now = moment(new Date())
   const nextMonth = now.clone().add(1, 'months')
   const yearMonthNow = `${now.format('YY')}${now.format('MM')}`
@@ -22,13 +23,16 @@ const getRecords = async (accessToken) => {
     console.log('--> Fetching Splatoon X Leaderboard')
     const rawXLeaderboardResponse = await fetch(`https://app.splatoon2.nintendo.net/api/x_power_ranking/${yearMonthNow}01T00_${yearMonthNext}01T00/summary`, requestOptions)
     xLeaderboardResponse = await rawXLeaderboardResponse.json()
+    const rawSalmonRunResponse = await fetch('https://app.splatoon2.nintendo.net/api/coop_results', requestOptions)
+    salmonRunResponse = await rawSalmonRunResponse.json()
   } catch (e) {
     recordsResponse = {}
     xLeaderboardResponse = {}
   }
   return {
     recordsResponse,
-    xLeaderboardResponse
+    xLeaderboardResponse,
+    salmonRunResponse
   }
 }
 
