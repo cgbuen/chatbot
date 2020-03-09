@@ -35,12 +35,8 @@ module.exports = async (req, res) => {
       let rank
       if (mode.is_x) {
         const ranking = playerInfo.x_leaderboard[translateMode(modeName)].my_ranking
-        if (ranking) {
-          const power = ranking.x_power || 'calibrating'
-          return `X (${power})`
-        } else {
-          return 'S+9'
-        }
+        const power = ranking ? ranking.x_power : 'calibrating'
+        return `X (${power})`
       } else if (mode.name === 'S+') {
         return `S+${mode.s_plus_number}`
       } else {
