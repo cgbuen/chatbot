@@ -22,7 +22,7 @@ app.get('/callback-twitch', initTwitch.callback)
 app.get('/spotify.json', require('./endpoints/json-spotify'))
 app.get('/twitch.json', require('./endpoints/json-twitch'))
 app.get('/internal-stats.json', require('./endpoints/json-internal-stats')( { startTime }))
-app.get('/nintendo.json', require('./endpoints/json-nintendo'))
+app.get('/splatoon.json', require('./endpoints/json-splatoon'))
 app.get('/chat', require('./endpoints/chat')({ startTime }))
 
 app.listen(port, () => console.log(`Spotify callback API endpoint app listening on port ${port}.`))

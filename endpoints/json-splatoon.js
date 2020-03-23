@@ -1,5 +1,5 @@
 const fs = require('fs')
-const requestNintendo = require('../helpers/request-nintendo')
+const requestSplatoon = require('../helpers/request-splatoon')
 const moment = require('moment')
 const { TOKEN_STORE } = require('../vars')
 const nFormatter = require('../helpers/nFormatter')
@@ -7,17 +7,17 @@ const unbreak = require('../helpers/unbreak')
 
 module.exports = async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
-  const nintendoStatsResponse = await requestNintendo.getRecords((fs.readFileSync(`./${TOKEN_STORE}/nintendo-access`, 'utf8') || '').trim())
-  let nintendoStats
+  const splatoonStatsResponse = await requestSplatoon.getRecords((fs.readFileSync(`./${TOKEN_STORE}/splatoon-access`, 'utf8') || '').trim())
+  let splatoonStats
   try {
     const playerInfo = {
-      player: nintendoStatsResponse.recordsResponse.records.player,
-      league_stats: nintendoStatsResponse.recordsResponse.records.league_stats,
-      win_count: nintendoStatsResponse.recordsResponse.records.win_count,
-      lose_count: nintendoStatsResponse.recordsResponse.records.lose_count,
-      weapon_stats: nintendoStatsResponse.recordsResponse.records.weapon_stats,
-      x_leaderboard: nintendoStatsResponse.xLeaderboardResponse,
-      salmon_run: nintendoStatsResponse.salmonRunResponse
+      player: splatoonStatsResponse.recordsResponse.records.player,
+      league_stats: splatoonStatsResponse.recordsResponse.records.league_stats,
+      win_count: splatoonStatsResponse.recordsResponse.records.win_count,
+      lose_count: splatoonStatsResponse.recordsResponse.records.lose_count,
+      weapon_stats: splatoonStatsResponse.recordsResponse.records.weapon_stats,
+      x_leaderboard: splatoonStatsResponse.xLeaderboardResponse,
+      salmon_run: splatoonStatsResponse.salmonRunResponse
     }
 
     const translateMode = mode => {
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     const rankClamBlitz = determineRank('udemae_clam')
     const rankTowerControl  = determineRank('udemae_tower')
 
-    nintendoStats = {
+    splatoonStats = {
       ranks: {
         rankRainmaker,
         rankSplatZones,
@@ -128,37 +128,37 @@ module.exports = async (req, res) => {
     const isNotQuestionMark = x => (x && x.name && x.name !== 'question mark')
     const removeParen = x => (x.name || '').replace(/[\(\)]/g, '')
 
-    // append all output_ values based on what's nintendoStats already has
-    nintendoStats.output_ranks = `[Ranks] ${
+    // append all output_ values based on what's splatoonStats already has
+    splatoonStats.output_ranks = `[Ranks] ${
       [
-        `Rainmaker: ${nintendoStats.ranks.rankRainmaker}`,
-        `Splat Zones: ${nintendoStats.ranks.rankSplatZones}`,
-        `Clam Blitz: ${nintendoStats.ranks.rankClamBlitz}`,
-        `Tower Control: ${nintendoStats.ranks.rankTowerControl}`
+        `Rainmaker: ${splatoonStats.ranks.rankRainmaker}`,
+        `Splat Zones: ${splatoonStats.ranks.rankSplatZones}`,
+        `Clam Blitz: ${splatoonStats.ranks.rankClamBlitz}`,
+        `Tower Control: ${splatoonStats.ranks.rankTowerControl}`
       ].map(unbreak).join(', ')
     }`
-    nintendoStats.output_league = {
+    splatoonStats.output_league = {
       pair: [
         `[League Pair]`,
-        `Max Power: ${nintendoStats.league.max_league_point_pair},`,
-        `Gold Medals: ${nintendoStats.league.pair.gold_count},`,
-        `Silver Medals: ${nintendoStats.league.pair.silver_count},`,
-        `Bronze Medals: ${nintendoStats.league.pair.bronze_count}`,
+        `Max Power: ${splatoonStats.league.max_league_point_pair},`,
+        `Gold Medals: ${splatoonStats.league.pair.gold_count},`,
+        `Silver Medals: ${splatoonStats.league.pair.silver_count},`,
+        `Bronze Medals: ${splatoonStats.league.pair.bronze_count}`,
       ].map(unbreak).join(' '),
       team: [
         `[League Team]`,
-        `Max Power: ${nintendoStats.league.max_league_point_team},`,
-        `Gold Medals: ${nintendoStats.league.team.gold_count},`,
-        `Silver Medals: ${nintendoStats.league.team.silver_count},`,
-        `Bronze Medals: ${nintendoStats.league.team.bronze_count}`,
+        `Max Power: ${splatoonStats.league.max_league_point_team},`,
+        `Gold Medals: ${splatoonStats.league.team.gold_count},`,
+        `Silver Medals: ${splatoonStats.league.team.silver_count},`,
+        `Bronze Medals: ${splatoonStats.league.team.bronze_count}`,
       ].map(unbreak).join(' ')
     },
-    nintendoStats.output_gear = {
+    splatoonStats.output_gear = {
       weapon: [
         `[Current Weapon]`,
         `${playerInfo.player.weapon.name.replace(/\s+/g, '\u00A0')}`,
-        `(W-L: ${nintendoStats.gear.weapon.stats.win_count}-${nintendoStats.gear.weapon.stats.lose_count},`,
-        `Turf Inked: ${nFormatter(nintendoStats.gear.weapon.stats.total_paint_point, 2)})`
+        `(W-L: ${splatoonStats.gear.weapon.stats.win_count}-${splatoonStats.gear.weapon.stats.lose_count},`,
+        `Turf Inked: ${nFormatter(splatoonStats.gear.weapon.stats.total_paint_point, 2)})`
       ].map(unbreak).join(' '),
       head: [
         `[Current Headgear]`,
@@ -179,32 +179,32 @@ module.exports = async (req, res) => {
         `Subs: ${playerInfo.player.shoes_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ')})`
       ].map(unbreak).join(' '),
     }
-    nintendoStats.output_lifetimeWL = unbreak(`[Lifetime W-L] ${nintendoStats.lifetimeWL}`)
-    nintendoStats.output_weaponStats = {
-      wins: `[Wins] ${nintendoStats.weaponStats.wins.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.win_count})`)).join(', ')}`,
-      losses: `[Losses] ${nintendoStats.weaponStats.losses.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.lose_count})`)).join(', ')}`,
-      ratio: `[W-L Ratio (min. 20 games)] ${nintendoStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
-      games: `[Games Played] ${nintendoStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.games_played})`)).join(', ')}`,
-      turf: `[Turf Inked] ${nintendoStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
-      recent: `[Most Recently Used] ${nintendoStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${moment(x.last_use_time).format('YYYY-MM-DD hh:mma')})`)).join(', ')}`
+    splatoonStats.output_lifetimeWL = unbreak(`[Lifetime W-L] ${splatoonStats.lifetimeWL}`)
+    splatoonStats.output_weaponStats = {
+      wins: `[Wins] ${splatoonStats.weaponStats.wins.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.win_count})`)).join(', ')}`,
+      losses: `[Losses] ${splatoonStats.weaponStats.losses.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.lose_count})`)).join(', ')}`,
+      ratio: `[W-L Ratio (min. 20 games)] ${splatoonStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
+      games: `[Games Played] ${splatoonStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.games_played})`)).join(', ')}`,
+      turf: `[Turf Inked] ${splatoonStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
+      recent: `[Most Recently Used] ${splatoonStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${moment(x.last_use_time).format('YYYY-MM-DD hh:mma')})`)).join(', ')}`
     }
-    nintendoStats.output_salmonRun = {
+    splatoonStats.output_salmonRun = {
       overall: [
         `[Salmon Run]`,
-        `Current Level: ${nintendoStats.salmonRun.current_level},`,
-        `Current Points: ${nintendoStats.salmonRun.current_points},`,
-        `Lifetime Shifts Played: ${nintendoStats.salmonRun.total_games}`,
+        `Current Level: ${splatoonStats.salmonRun.current_level},`,
+        `Current Points: ${splatoonStats.salmonRun.current_points},`,
+        `Lifetime Shifts Played: ${splatoonStats.salmonRun.total_games}`,
       ].map(unbreak).join(' '),
       individual: [
         `[Salmon Run Individual Stats]`,
-        `Lifetime Golden Eggs: ${nFormatter(nintendoStats.salmonRun.total_golden_eggs, 2)},`,
-        `Lifetime Power Eggs: ${nFormatter(nintendoStats.salmonRun.total_power_eggs, 2)},`,
-        `Lifetime Crew Members Rescued: ${nintendoStats.salmonRun.total_rescues}`
+        `Lifetime Golden Eggs: ${nFormatter(splatoonStats.salmonRun.total_golden_eggs, 2)},`,
+        `Lifetime Power Eggs: ${nFormatter(splatoonStats.salmonRun.total_power_eggs, 2)},`,
+        `Lifetime Crew Members Rescued: ${splatoonStats.salmonRun.total_rescues}`
       ].map(unbreak).join(' ')
     }
   } catch (e) {
-    console.log('** Error retrieving nintendo stats', e)
-    nintendoStats = {}
+    console.log('** Error retrieving splatoon stats', e)
+    splatoonStats = {}
   }
-  return res.send(nintendoStats)
+  return res.send(splatoonStats)
 }

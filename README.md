@@ -94,6 +94,6 @@ your `TOKEN_STORE` directory.
 
 Additionally, you'll need to use an MitM proxy (e.g. Charles) to fetch your
 `iksm_session` cookie token, and then place that value into a new file named
-_nintendo-access_, which is placed in your `TOKEN_STORE` directory. This will
+_splatoon-access_, which is placed in your `TOKEN_STORE` directory. This will
 continually need to be done every three calendar days, but is best off being
 done before each stream.
