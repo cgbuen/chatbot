@@ -164,19 +164,19 @@ module.exports = async (req, res) => {
         `[Current Headgear]`,
         `${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity + 1)})`,
         `(Main: ${removeParen(playerInfo.player.head_skills.main)},`,
-        `Subs: ${playerInfo.player.head_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ')})`
+        `Subs: ${playerInfo.player.head_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ') || 'None'})`
       ].map(unbreak).join(' '),
       clothes: [
         `[Current Clothes]`,
         `${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity + 1)})`,
         `(Main: ${removeParen(playerInfo.player.clothes_skills.main)},`,
-        `Subs: ${playerInfo.player.clothes_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ')})`
+        `Subs: ${playerInfo.player.clothes_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ') || 'None'})`
       ].map(unbreak).join(' '),
       shoes: [
         `[Current Shoes]`,
         `${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity + 1)})`,
         `(Main: ${removeParen(playerInfo.player.shoes_skills.main)},`,
-        `Subs: ${playerInfo.player.shoes_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ')})`
+        `Subs: ${playerInfo.player.shoes_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ') || 'None'})`
       ].map(unbreak).join(' '),
     }
     splatoonStats.output_lifetimeWL = unbreak(`[Lifetime W-L] ${splatoonStats.lifetimeWL}`)
