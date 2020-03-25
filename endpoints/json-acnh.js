@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
         `Motto: \u201C${acnhRecords.player.comment}\u201D`,
       ].map(unbreak).join(', ')
     }`
-    acnhRecords.output_neighbors = `[Neighbors] ${acnhRecords.neighbors.map((x, i) => `${`scgbimage_${x.image}|srcClassSep|${acnhneighbor}_${i}_ecgbimage`}${unbreak(`${x.name} (birthday: ${calendar[x.birthMonth]} ${x.birthDay})`)}`).join(', ')}`
+    acnhRecords.output_neighbors = `[Neighbors] ${acnhRecords.neighbors.map((x, i) => `${`scgbimage_${x.image}|srcClassSep|acnhneighbor_${i}_ecgbimage`}${unbreak(`${x.name} (birthday: ${calendar[x.birthMonth]} ${x.birthDay})`)}`).join(', ')}`
     acnhRecords.output_island = `[Island] ${
       [
         acnhRecords.island.name,
