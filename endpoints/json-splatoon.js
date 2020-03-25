@@ -93,25 +93,25 @@ module.exports = async (req, res) => {
       weaponStats: {
         wins: weaponArray
           .sort((x, y) => y.win_count - x.win_count)
-          .map(x => ({ name: x.weapon.name, win_count: x.win_count })),
+          .map(x => ({ name: x.weapon.name, win_count: x.win_count, thumbnail: x.weapon.thumbnail })),
         losses: weaponArray
           .sort((x, y) => y.lose_count - x.lose_count)
-          .map(x => ({ name: x.weapon.name, lose_count: x.lose_count })),
+          .map(x => ({ name: x.weapon.name, lose_count: x.lose_count, thumbnail: x.weapon.thumbnail })),
         ratio: weaponArray
           .sort((x, y) => (y.win_count/y.lose_count) - (x.win_count/x.lose_count))
-          .map(x => ({ name: x.weapon.name, ratio: x.win_count/(x.win_count + x.lose_count), record: `${x.win_count}-${x.lose_count}`, games: x.win_count + x.lose_count })),
+          .map(x => ({ name: x.weapon.name, ratio: x.win_count/(x.win_count + x.lose_count), record: `${x.win_count}-${x.lose_count}`, games: x.win_count + x.lose_count, thumbnail: x.weapon.thumbnail })),
         games: weaponArray
           .sort((x, y) => (y.win_count + y.lose_count) - (x.win_count + x.lose_count))
-          .map(x => ({ name: x.weapon.name, games_played: x.win_count + x.lose_count })),
+          .map(x => ({ name: x.weapon.name, games_played: x.win_count + x.lose_count, thumbnail: x.weapon.thumbnail })),
         turf: weaponArray
           .sort((x, y) => y.total_paint_point - x.total_paint_point)
-          .map(x => ({ name: x.weapon.name, total_paint_point: x.total_paint_point })),
+          .map(x => ({ name: x.weapon.name, total_paint_point: x.total_paint_point, thumbnail: x.weapon.thumbnail })),
         recent: weaponArray
           .sort((x, y) => y.last_use_time - x.last_use_time)
-          .map(x => ({ name: x.weapon.name, last_use_time: moment(x.last_use_time*1000).format() })),
+          .map(x => ({ name: x.weapon.name, last_use_time: moment(x.last_use_time*1000).format(), thumbnail: x.weapon.thumbnail })),
         meter: weaponArray
           .sort((x, y) => y.win_meter - x.win_meter)
-          .map(x => ({ name: x.weapon.name, win_meter: x.win_meter })),
+          .map(x => ({ name: x.weapon.name, win_meter: x.win_meter, thumbnail: x.weapon.thumbnail })),
       },
       salmonRun: {
         total_golden_eggs: playerInfo.salmon_run.summary.card.golden_ikura_total,
@@ -125,8 +125,10 @@ module.exports = async (req, res) => {
     }
 
 
-    const isNotQuestionMark = x => (x && x.name && x.name !== 'question mark')
-    const removeParen = x => (x.name || '').replace(/[\(\)]/g, '')
+    const assetsDomain = 'https://app.splatoon2.nintendo.net'
+    const escapeImageSingle = (x, imgClass) => `${`scgbimage_${assetsDomain}${x}|srcClassSep|${imgClass}_0_ecgbimage`}`
+    const escapeImagesStats = (x, i) => `${`scgbimage_${assetsDomain}${x}|srcClassSep|splatoonweapon_${i}_ecgbimage`}`
+    const escapeImagesSkill = (x, i) => `${`scgbimage_${assetsDomain}${x.image}|srcClassSep|splatoonskill_${i + 1}_ecgbimage`}`
 
     // append all output_ values based on what's splatoonStats already has
     splatoonStats.output_ranks = `[Ranks] ${
@@ -156,37 +158,37 @@ module.exports = async (req, res) => {
     splatoonStats.output_gear = {
       weapon: [
         `[Current Weapon]`,
-        `${playerInfo.player.weapon.name.replace(/\s+/g, '\u00A0')}`,
+        `${escapeImageSingle(playerInfo.player.weapon.image, 'splatoonweapon')}${playerInfo.player.weapon.name.replace(/\s+/g, '\u00A0')}`,
         `(W-L: ${splatoonStats.gear.weapon.stats.win_count}-${splatoonStats.gear.weapon.stats.lose_count},`,
         `Turf Inked: ${nFormatter(splatoonStats.gear.weapon.stats.total_paint_point, 2)})`
       ].map(unbreak).join(' '),
       head: [
         `[Current Headgear]`,
         `${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity + 1)})`,
-        `(Main: ${removeParen(playerInfo.player.head_skills.main)},`,
-        `Subs: ${playerInfo.player.head_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ') || 'None'})`
+        `(Main: ${escapeImageSingle(playerInfo.player.head_skills.main.image, 'splatoonskill')},`,
+        `Subs: ${playerInfo.player.head_skills.subs.map(escapeImagesSkill).join(', ') || 'None'})`
       ].map(unbreak).join(' '),
       clothes: [
         `[Current Clothes]`,
         `${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity + 1)})`,
-        `(Main: ${removeParen(playerInfo.player.clothes_skills.main)},`,
-        `Subs: ${playerInfo.player.clothes_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ') || 'None'})`
+        `(Main: ${escapeImageSingle(playerInfo.player.clothes_skills.main.image, 'splatoonskill')},`,
+        `Subs: ${playerInfo.player.clothes_skills.subs.map(escapeImagesSkill).join(', ') || 'None'})`
       ].map(unbreak).join(' '),
       shoes: [
         `[Current Shoes]`,
         `${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity + 1)})`,
-        `(Main: ${removeParen(playerInfo.player.shoes_skills.main)},`,
-        `Subs: ${playerInfo.player.shoes_skills.subs.filter(isNotQuestionMark).map(removeParen).join(', ') || 'None'})`
+        `(Main: ${escapeImageSingle(playerInfo.player.shoes_skills.main.image, 'splatoonskill')},`,
+        `Subs: ${playerInfo.player.shoes_skills.subs.map(escapeImagesSkill).join(', ') || 'None'})`
       ].map(unbreak).join(' '),
     }
     splatoonStats.output_lifetimeWL = unbreak(`[Lifetime W-L] ${splatoonStats.lifetimeWL}`)
     splatoonStats.output_weaponStats = {
-      wins: `[Wins] ${splatoonStats.weaponStats.wins.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.win_count})`)).join(', ')}`,
-      losses: `[Losses] ${splatoonStats.weaponStats.losses.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.lose_count})`)).join(', ')}`,
-      ratio: `[W-L Ratio (min. 20 games)] ${splatoonStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
-      games: `[Games Played] ${splatoonStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.games_played})`)).join(', ')}`,
-      turf: `[Turf Inked] ${splatoonStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
-      recent: `[Most Recently Used] ${splatoonStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${x.name} (${moment(x.last_use_time).format('YYYY-MM-DD hh:mma')})`)).join(', ')}`
+      wins: `[Wins] ${splatoonStats.weaponStats.wins.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${x.win_count})`)).join(', ')}`,
+      losses: `[Losses] ${splatoonStats.weaponStats.losses.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${x.lose_count})`)).join(', ')}`,
+      ratio: `[W-L Ratio (min. 20 games)] ${splatoonStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
+      games: `[Games Played] ${splatoonStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${x.games_played})`)).join(', ')}`,
+      turf: `[Turf Inked] ${splatoonStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
+      recent: `[Most Recently Used] ${splatoonStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${moment(x.last_use_time).format('YYYY-MM-DD hh:mma')})`)).join(', ')}`
     }
     splatoonStats.output_salmonRun = {
       overall: [

@@ -21,11 +21,12 @@ const getRecords = async (accessToken) => {
     const rawRecordsResponse = await fetch('https://app.splatoon2.nintendo.net/api/records', requestOptions)
     recordsResponse = await rawRecordsResponse.json()
     console.log('--> Fetching Splatoon X Leaderboard')
-    const rawXLeaderboardResponse = await fetch(`https://app.splatoon2.nintendo.net/api/x_power_ranking/${yearMonthNow}01T00_${yearMonthNext}01T00/summary`, requestOptions)
+    const rawXLeaderboardResponse = await fetch(`${'https://app.splatoon2.nintendo.net'}/api/x_power_ranking/${yearMonthNow}01T00_${yearMonthNext}01T00/summary`, requestOptions)
     xLeaderboardResponse = await rawXLeaderboardResponse.json()
     const rawSalmonRunResponse = await fetch('https://app.splatoon2.nintendo.net/api/coop_results', requestOptions)
     salmonRunResponse = await rawSalmonRunResponse.json()
   } catch (e) {
+    console.log('==> Request fetch Splatoon data', e)
     recordsResponse = {}
     xLeaderboardResponse = {}
   }

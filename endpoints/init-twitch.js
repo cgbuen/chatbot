@@ -42,7 +42,7 @@ const callback = async (req, res) => {
   fs.writeFileSync(`./${TOKEN_STORE}/twitch-refresh`, tokenData.refresh_token)
   console.log('--> Requesting user ID')
   const userId = await requestTwitch.getOwnUserId(tokenData.access_token)
-  fs.writeFileSync(`./${TOKEN_STORE}/twitch-user`, userId)
+  fs.writeFileSync(`./${TOKEN_STORE}/twitch-data-user`, userId)
   return res.send(`
     <html>
       <body>

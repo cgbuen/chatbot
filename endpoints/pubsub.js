@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
 
     try {
       const ws = new WebSocket('wss://pubsub-edge.twitch.tv')
-      const user = (fs.readFileSync(`./${TOKEN_STORE}/twitch-user`, 'utf8') || '').trim()
+      const user = (fs.readFileSync(`./${TOKEN_STORE}/twitch-data-user`, 'utf8') || '').trim()
       const objPing = JSON.stringify({ type: 'PING' })
       const objListen = JSON.stringify({
         type: 'LISTEN',
