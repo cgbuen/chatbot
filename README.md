@@ -16,7 +16,9 @@ The endpoints gather data from the following sources:
 
 - Spotify API (for currently playing song)
 - Twitch API (for followers, bits, and subs)
-- Nintendo / Splatoon API (for gear, ranks, and other stats)
+- Splatoon API (for gear, ranks, and other stats)
+- Animal Crossing: New Horizons API (for player/island info, as well as live
+  keyboard inputs)
 - Your own local machine (for chat game stats, uptime, and other possible
   hardcoded data)
 
@@ -83,6 +85,18 @@ following format:
 
     npm start
 
+This kicks off a few things:
+
+- The Express endpoint server, most notable for the API data that gets consumed
+  by a separate React app
+- A sockets connection to Twitch chat (twitch-js), as per one of the endpoints
+  which is opened in your browser, which then redirects to your main Twitch
+  stream dashboard page
+- A separate sockets connection to Twitch for channel points redemptions
+  (written from scratch here), as per one of the endpoints which is opened in
+  your browser, which then redirects to your Twitch channel's rewards settings
+  page
+
 ### Notes
 
 You'll have to hit the following endpoints if you're running this the first
@@ -94,6 +108,16 @@ your `TOKEN_STORE` directory.
 
 Additionally, you'll need to use an MitM proxy (e.g. Charles) to fetch your
 `iksm_session` cookie token, and then place that value into a new file named
-_splatoon-access_, which is placed in your `TOKEN_STORE` directory. This will
-continually need to be done every three calendar days, but is best off being
-done before each stream.
+_splatoon-access_, which is placed in your `TOKEN_STORE` directory. 
+
+For Animal Crossing: New Horizons, you'll need to use the same MitM proxy to
+fetch the bearer token, which is to be placed in _acnh-access_ in the
+`TOKEN_STORE`.
+
+These two Nintendo tokens should be checked / updated through your MitM proxy
+before each stream, as they tend to expire every couple of days.
+
+Note that there is user-specific data that is generated upon use of this
+software, which end up getting stored in `TOKEN_STORE` despite not being tokens
+per se. They just need to be stored somewhere safe, and they might as well be
+considered sensitive anyway.
