@@ -3,6 +3,12 @@ const moment = require('moment')
 const express = require('express')
 const open = require('open')
 const { COUNTER, TOKEN_STORE } = require('./vars')
+const LIVE = true
+const DEBUG_SPOTIFY = false
+const DEBUG_TWITCH = false
+const DEBUG_INTERNAL = false
+const DEBUG_SPLATOON = false
+const DEBUG_ACNH = false
 
 const app = express()
 const port = 3000
@@ -28,7 +34,19 @@ app.get('/chat', require('./endpoints/chat')({ startTime }))
 app.get('/pubsub', require('./endpoints/pubsub'))
 
 app.listen(port, () => console.log(`Spotify callback API endpoint app listening on port ${port}.`))
-open(`${'http://localhost:3000'}${fs.existsSync(`./${TOKEN_STORE}/twitch-access`) ? '/chat' : '/inittoken-twitch'}`)
-setTimeout(function() {
-  open(`${'http://localhost:3000'}/pubsub`)
-}, 8000)
+if (LIVE) {
+  open(`${'http://localhost:3000'}${fs.existsSync(`./${TOKEN_STORE}/twitch-access`) ? '/chat' : '/inittoken-twitch'}`)
+  setTimeout(function() {
+    open(`${'http://localhost:3000'}/pubsub`)
+  }, 8000)
+} else if (DEBUG_SPOTIFY) {
+  open(`${'http://localhost:3000'}/spotify.json`)
+} else if (DEBUG_TWITCH) {
+  open(`${'http://localhost:3000'}/twitch.json`)
+} else if (DEBUG_INTERNAL) {
+  open(`${'http://localhost:3000'}/internal.json`)
+} else if (DEBUG_SPLATOON) {
+  open(`${'http://localhost:3000'}/splatoon.json`)
+} else if (DEBUG_ACNH) {
+  open(`${'http://localhost:3000'}/acnh.json`)
+}

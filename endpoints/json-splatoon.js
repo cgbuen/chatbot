@@ -188,7 +188,7 @@ module.exports = async (req, res) => {
       ratio: `[W-L Ratio (min. 20 games)] ${splatoonStats.weaponStats.ratio.filter(x => x.games >= 20).slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${x.record}, ${x.ratio.toFixed(4)})`)).join(', ')}`,
       games: `[Games Played] ${splatoonStats.weaponStats.games.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${x.games_played})`)).join(', ')}`,
       turf: `[Turf Inked] ${splatoonStats.weaponStats.turf.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${nFormatter(x.total_paint_point, 2)})`)).join(', ')}`,
-      recent: `[Most Recently Used] ${splatoonStats.weaponStats.recent.slice(0, 5).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${moment(x.last_use_time).format('YYYY-MM-DD hh:mma')})`)).join(', ')}`
+      recent: `[Most Recently Used] ${splatoonStats.weaponStats.recent.slice(0, 3).map((x, i) => unbreak(`${i + 1}. ${escapeImagesStats(x.thumbnail, i, 'splatoonweapon')} ${x.name} (${moment(x.last_use_time).format('YYYY-MM-DD hh:mma')})`)).join(', ')}`
     }
     splatoonStats.output_salmonRun = {
       overall: [
