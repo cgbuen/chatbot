@@ -166,19 +166,19 @@ module.exports = async (req, res) => {
         `[Current Headgear]`,
         `${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity + 1)})`,
         `(Main: ${escapeImageSingle(playerInfo.player.head_skills.main.image, 'splatoonskill')},`,
-        `Subs: ${playerInfo.player.head_skills.subs.map(escapeImagesSkill).join(', ') || 'None'})`
+        `Subs: ${playerInfo.player.head_skills.subs.map(escapeImagesSkill).join(', ')})`
       ].map(unbreak).join(' '),
       clothes: [
         `[Current Clothes]`,
         `${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity + 1)})`,
         `(Main: ${escapeImageSingle(playerInfo.player.clothes_skills.main.image, 'splatoonskill')},`,
-        `Subs: ${playerInfo.player.clothes_skills.subs.map(escapeImagesSkill).join(', ') || 'None'})`
+        `Subs: ${playerInfo.player.clothes_skills.subs.map(escapeImagesSkill).join(', ')})`
       ].map(unbreak).join(' '),
       shoes: [
         `[Current Shoes]`,
         `${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity + 1)})`,
         `(Main: ${escapeImageSingle(playerInfo.player.shoes_skills.main.image, 'splatoonskill')},`,
-        `Subs: ${playerInfo.player.shoes_skills.subs.map(escapeImagesSkill).join(', ') || 'None'})`
+        `Subs: ${playerInfo.player.shoes_skills.subs.map(escapeImagesSkill).join(', ')})`
       ].map(unbreak).join(' '),
     }
     splatoonStats.output_lifetimeWL = unbreak(`[Lifetime W-L] ${splatoonStats.lifetimeWL}`)
