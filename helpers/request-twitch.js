@@ -164,12 +164,19 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
         started_at: moment().startOf('week').format()
       }
     })
+    const streamsResponse = await api.get('streams', {
+      version: 'helix',
+      search: {
+        user_id: user
+      }
+    })
     data = {
       followersResponse,
       subscriptionsResponse,
       bitsLeadersAlltimeResponse,
       bitsLeadersMonthResponse,
-      bitsLeadersWeekResponse
+      bitsLeadersWeekResponse,
+      streamsResponse
     }
   } catch (e) {
     console.log('==> Request twitch getAllStats api fetch error', e)
