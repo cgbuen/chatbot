@@ -1,7 +1,28 @@
 const fetch = require('node-fetch')
 const moment = require('moment')
 
-const getRecords = async (accessToken) => {
+const auth = async ({ nintendoAccess, regToken }) => {
+  // also reauths - no refresh needed
+  const gameWebToken = requestNintendo.getGameWebToken(nintendoAccess, regToken, 'Splatoon 2')
+
+  const requestOptionsSlash = {
+    headers: {
+      'x-gamewebtoken': gameWebToken
+    }
+  }
+  console.log('--> Fetching slash path for Splatoon iksm token cookie.')
+  const rawSlashResponse = await fetch('https://app.splatoon2.nintendo.net/?lang=en-US&na_country=US&na_lang=en-US', requestOptionsSlash)
+  const slashResponseHeaders = rawSlashResponse.headers
+  const iksmCookie = (slashResponseHeaders['set-cookie'].match(/iksm_session=(.*?);/) || [])[1]
+  fs.writeFileSync(`./${TOKEN_STORE}/splatoon-access`, iksmCookie)
+  return iksmCookie
+}
+
+const getRecords = async (accessToken, { retries = 2 } = {}) => {
+  if (!retries) {
+    console.log('** Too many Nintendo refresh attempts (Splatoon)')
+    return { error: 'Too many Nintendo refresh attempts.' }
+  }
   const requestOptions = {
     headers: {
       cookie: `iksm_session=${accessToken}`,
@@ -20,6 +41,14 @@ const getRecords = async (accessToken) => {
     console.log('--> Fetching Splatoon records')
     const rawRecordsResponse = await fetch('https://app.splatoon2.nintendo.net/api/records', requestOptions)
     recordsResponse = await rawRecordsResponse.json()
+    if (recordsResponse.code === 'AUTHENTICATION_ERROR') {
+      console.log('--> Not successful. Refreshing.')
+      const updatedToken = await auth({
+        nintendoAccess: fs.readFileSync(`./${TOKEN_STORE}/nintendo-access`, 'utf8'),
+        regToken: fs.readFileSync(`./${TOKEN_STORE}/nintendo-device`, 'utf8')
+      })
+      return await getRecords(updatedToken, { retries: retries - 1 })
+    }
     console.log('--> Fetching Splatoon X Leaderboard')
     const rawXLeaderboardResponse = await fetch(`${'https://app.splatoon2.nintendo.net'}/api/x_power_ranking/${yearMonthNow}01T00_${yearMonthNext}01T00/summary`, requestOptions)
     xLeaderboardResponse = await rawXLeaderboardResponse.json()

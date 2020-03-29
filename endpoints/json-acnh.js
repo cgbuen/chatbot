@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
   const accessToken = (fs.readFileSync(`./${TOKEN_STORE}/acnh-access`, 'utf8') || '').trim()
   const islandId = (fs.readFileSync(`./${TOKEN_STORE}/acnh-data-land`, 'utf8') || '').trim()
-  const acnhResponse = await requestAcnh.getInfo({ accessToken, islandId })
+  const acnhResponse = await requestAcnh.getInfo(accessToken, islandId)
   const calendar = ['stub', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   let acnhRecords
   try {
