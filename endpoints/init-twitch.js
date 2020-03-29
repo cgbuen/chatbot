@@ -16,15 +16,16 @@ const init = async (req, res) => {
     state: CSRF_TOKEN,
     force_verify: true,
     scope: [
-      'channel:read:subscriptions',
       'bits:read',
-      'chat:read',
-      'chat:edit',
       'channel:moderate',
-      'whispers:read',
-      'whispers:edit',
+      'channel:read:redemptions',
+      'channel:read:subscriptions',
       'channel_editor',
       'channel_subscriptions',
+      'chat:edit',
+      'chat:read',
+      'whispers:edit',
+      'whispers:read',
     ].join('__PLUS__')
   }
   const url = `https://id.twitch.tv/oauth2/authorize?${qs.stringify(query)}`.replace(/__PLUS__/g, '+')
@@ -35,9 +36,13 @@ const callback = async (req, res) => {
   if (!csrfGenerator.verify(CSRF_SECRET, req.query.state)) {
     return res.send('Authentication failed.')
   }
+  console.log('--> Requesting Twitch auth.')
   const tokenData = await requestTwitch.auth(req.query.code)
   fs.writeFileSync(`./${TOKEN_STORE}/twitch-access`, tokenData.access_token)
   fs.writeFileSync(`./${TOKEN_STORE}/twitch-refresh`, tokenData.refresh_token)
+  console.log('--> Requesting user ID')
+  const userId = await requestTwitch.getOwnUserId(tokenData.access_token)
+  fs.writeFileSync(`./${TOKEN_STORE}/twitch-data-user`, userId)
   return res.send(`
     <html>
       <body>
