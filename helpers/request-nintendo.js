@@ -1,5 +1,6 @@
 const fetch = require('node-fetch')
 const qs = require('qs')
+const uuid = require('uuid')
 const { TOKEN_STORE } = require('../vars')
 
 const getInitialTokenCreds = async (nintendoAccess) => {
@@ -123,7 +124,7 @@ const getGameWebToken = async (nintendoAccess, regToken, game) => {
   const initialTokenCreds = await getInitialTokenCreds(nintendoAccess)
 
   const idToken = initialTokenCreds.id_token
-  const requestIdLogin = uuid()
+  const requestIdLogin = uuid.v4()
   const fLogin = await getF({
     timestamp: Date.now(),
     idToken,
@@ -139,7 +140,7 @@ const getGameWebToken = async (nintendoAccess, regToken, game) => {
     f: fLogin,
   })
 
-  const requestIdWST = uuid()
+  const requestIdWST = uuid.v4()
   const fWST = await getF({
     timestamp: Date.now(),
     idToken,
