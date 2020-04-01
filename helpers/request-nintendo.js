@@ -4,13 +4,18 @@ const uuid = require('uuid')
 const { TOKEN_STORE } = require('../vars')
 
 const getInitialTokenCreds = async (nintendoAccess) => {
-  const nintendoClientId = '71b963c1b7b6d119'
-  const nintendoGrantType = 'urn:ietf:params:oauth:grant-type:jwt-bearer-session-token'
+  const nintendoClientId = '71b963c1b7b6d119' // hardcoded
+  const nintendoGrantType = 'urn:ietf:params:oauth:grant-type:jwt-bearer-session-token' // hardcoded
   const requestOptions = {
     method: 'post',
     headers: {
       'content-type': 'application/json'
-    }
+    },
+    body: JSON.stringify({
+      client_id: nintendoClientId,
+      session_token: nintendoAccess,
+      grant_type: nintendoGrantType
+    })
   }
   console.log('--> Fetching initial token credentials (id_token) from /token.')
   const rawTokenResponse = await fetch('https://accounts.nintendo.com/connect/1.0.0/api/token', requestOptions)
@@ -18,41 +23,10 @@ const getInitialTokenCreds = async (nintendoAccess) => {
   return tokenResponse
 }
 
-const getF = async ({ idToken, timestamp, requestId }) => {
-  const requestOptionsHash = {
-    method: 'post',
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded',
-      'user-agent': 'user_agent/version.num'
-    },
-    body: qs.stringify({
-      naIdToken: idToken
-    })
-  }
-  console.log('--> Fetching hash from Eli Fessler\'s /gen2 s2s API.')
-  const rawHashResponse = await fetch('https://elifessler.com/s2s/api/gen2', requestOptionsHash)
-  const hashResponse = await rawHashResponse.json()
-  const hash = hashResponse.hash
-  const requestOptionsF = {
-    headers: {
-      'x-token': idToken,
-      'x-time': timestamp,
-      'x-guid': requestId,
-      'x-hash': hash,
-      'x-ver': 2,
-      'x-iid': 'asdfgh'
-    },
-  }
-  console.log('--> Fetching f token from Nexus\'s flapg API.')
-  const rawFResponse = await fetch('https://flapg.com/ika2/api/login', requestOptionsF)
-  const fResponse = await rawFResponse.json()
-  return fResponse.f
-}
-
-const getHumanInfo = async (idToken) => {
+const getHumanInfo = async (bearerToken) => {
   const requestOptions = {
     headers: {
-      'authorization': `Bearer ${idToken}`
+      'authorization': `Bearer ${bearerToken}`
     }
   }
   console.log('--> Fetching human info from /me.')
@@ -61,27 +35,52 @@ const getHumanInfo = async (idToken) => {
   return humanInfoResponse
 }
 
-const getNintendoWebApiServerCredential = async ({ idToken, birthday, requestId, f }) => {
+const getF = async ({ naIdToken, timestamp, requestId, iid }) => {
+  const requestOptionsHash = {
+    method: 'post',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      'user-agent': 'cgbuen/1.0.0'
+    },
+    body: qs.stringify({
+      naIdToken,
+      timestamp
+    })
+  }
+  console.log('--> Fetching hash from Eli Fessler\'s /gen2 s2s API.')
+  const rawHashResponse = await fetch('https://elifessler.com/s2s/api/gen2', requestOptionsHash)
+  const hashResponse = await rawHashResponse.json()
+  const hash = hashResponse.hash
+  const requestOptionsF = {
+    headers: {
+      'x-token': naIdToken,
+      'x-time': timestamp,
+      'x-guid': requestId,
+      'x-hash': hash,
+      'x-ver': '3',
+      'x-iid': iid
+    },
+  }
+  console.log('--> Fetching f token from Nexus\'s flapg', iid, 'API.')
+  const rawFResponse = await fetch('https://flapg.com/ika2/api/login?public', requestOptionsF)
+  const fResponse = await rawFResponse.json()
+  return fResponse
+}
+
+const getNintendoWebApiServerCredential = async (parameter) => {
   const requestOptions = {
     method: 'post',
     headers: {
-      'content-type': 'application/json'
+      'content-type': 'application/json',
+      'x-productversion': '1.6.1.2',
+      'x-platform': 'Android', // must be android due to flapg
     },
-    body: JSON.stringify({
-      parameter: {
-        naIdToken: idToken,
-        naIdCountry: 'US',
-        naBirthday: birthday,
-        language: 'en-US',
-        requestId,
-        f
-      }
-    })
+    body: JSON.stringify({ parameter })
   }
   console.log('--> Fetching WebApiServerCredential from /Login.')
   const rawLoginResponse = await fetch('https://api-lp1.znc.srv.nintendo.net/v1/Account/Login', requestOptions)
   const loginResponse = await rawLoginResponse.json()
-  return loginResponse.result.webApiServerCredential.accessToken
+  return loginResponse
 }
 
 const getGameList = async (bearerToken) => {
@@ -89,74 +88,76 @@ const getGameList = async (bearerToken) => {
     method: 'post',
     headers: {
       'authorization': `Bearer ${bearerToken}`,
-      'content-type': 'application/json'
+      'content-type': 'application/json',
+      'x-productversion': '1.6.1.2',
+      'x-platform': 'Android', // must be android due to flapg
     }
   }
   console.log('--> Fetching game list from /ListWebServices.')
   const rawGameListResponse = await fetch('https://api-lp1.znc.srv.nintendo.net/v1/Game/ListWebServices', requestOptions)
   const gameListResponse = await rawGameListResponse.json()
-  const gameList = gameListResponse.result
-  return gameList
+  return gameListResponse
 }
 
-const getWebServiceToken = async ({ id, bearerToken, regToken, requestId, timestamp, f }) => {
+const getWebServiceToken = async (bearerToken, parameter) => {
   const requestOptions = {
     method: 'post',
     headers: {
       'authorization': `Bearer ${bearerToken}`,
-      'content-type': 'application/json'
+      'content-type': 'application/json',
+      'x-productversion': '1.6.1.2',
+      'x-platform': 'Android', // must be android due to flapg
     },
-    body: JSON.stringify({
-      id,
-      registrationToken: regToken,
-      requestId,
-      timestamp,
-      f
-    })
+    body: JSON.stringify({ parameter })
   }
   console.log('--> Fetching WebServiceToken from /GetWebServiceToken.')
   const rawTokenResponse = await fetch('https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken', requestOptions)
   const tokenResponse = await rawTokenResponse.json()
-  return tokenResponse.result.accessToken
+  return tokenResponse
 }
 
-const getGameWebToken = async (nintendoAccess, regToken, game) => {
+const getGameWebToken = async (nintendoAccess, game) => {
   const initialTokenCreds = await getInitialTokenCreds(nintendoAccess)
 
-  const idToken = initialTokenCreds.id_token
-  const requestIdLogin = uuid.v4()
   const fLogin = await getF({
     timestamp: Date.now(),
-    idToken,
-    requestId: requestIdLogin
+    naIdToken: initialTokenCreds.id_token,
+    requestId: uuid.v4(),
+    iid: 'nso'
   })
 
-  const birthday = await getHumanInfo(idToken).birthday
+  const humanInfo = await getHumanInfo(initialTokenCreds.access_token)
 
-  const bearerToken = await getNintendoWebApiServerCredential({
-    birthday,
-    idToken,
-    requestId: requestIdLogin,
-    f: fLogin,
+  const bearerTokenResponse = await getNintendoWebApiServerCredential({
+    naIdToken: fLogin.result.p1,
+    naCountry: humanInfo.country,
+    naBirthday: humanInfo.birthday,
+    language: humanInfo.language,
+    requestId: fLogin.result.p3,
+    timestamp: parseInt(fLogin.result.p2),
+    f: fLogin.result.f,
   })
 
-  const requestIdWST = uuid.v4()
+  const bearerToken = bearerTokenResponse.result.webApiServerCredential.accessToken
+
   const fWST = await getF({
-    timestamp: Date.now(),
-    idToken,
-    requestId: requestIdWST
+    timestamp: parseInt(fLogin.result.p2),
+    naIdToken: bearerToken,
+    requestId: fLogin.result.p3,
+    iid: 'app'
   })
 
-  const playerId = await getGameList(bearerToken).filter(x => x.name === game)[0].id
+  const gameList = await getGameList(bearerToken)
 
-  return await getWebServiceToken({
-    id: playerId,
-    bearerToken: nintendoWebServerApiCredential,
-    regToken,
-    timestamp,
-    requestId: requestIdWST,
-    f: fWST
+  const webServiceTokenResponse = await getWebServiceToken(bearerToken, {
+    id: gameList.result.filter(x => x.name === game)[0].id,
+    registrationToken: fWST.result.p1,
+    timestamp: parseInt(fWST.result.p2),
+    requestId: fWST.result.p3,
+    f: fWST.result.f
   })
+
+  return webServiceTokenResponse.result.accessToken
 }
 
 module.exports = {

@@ -1,9 +1,12 @@
+const fs = require('fs')
 const fetch = require('node-fetch')
 const moment = require('moment')
+const requestNintendo = require('./request-nintendo')
+const { TOKEN_STORE } = require('../vars')
 
-const auth = async ({ nintendoAccess, regToken }) => {
+const auth = async (nintendoAccess) => {
   // also reauths - no refresh needed
-  const gameWebToken = requestNintendo.getGameWebToken(nintendoAccess, regToken, 'Splatoon 2')
+  const gameWebToken = await requestNintendo.getGameWebToken(nintendoAccess, 'Splatoon 2')
 
   const requestOptionsSlash = {
     headers: {
@@ -13,12 +16,12 @@ const auth = async ({ nintendoAccess, regToken }) => {
   console.log('--> Fetching slash path for Splatoon iksm token cookie.')
   const rawSlashResponse = await fetch('https://app.splatoon2.nintendo.net/?lang=en-US&na_country=US&na_lang=en-US', requestOptionsSlash)
   const slashResponseHeaders = rawSlashResponse.headers
-  const iksmCookie = (slashResponseHeaders['set-cookie'].match(/iksm_session=(.*?);/) || [])[1]
+  const iksmCookie = ((slashResponseHeaders.get('set-cookie') || '').match(/iksm_session=(.*?);/) || [])[1]
   fs.writeFileSync(`./${TOKEN_STORE}/splatoon-access`, iksmCookie)
   return iksmCookie
 }
 
-const getRecords = async (accessToken, { retries = 2 } = {}) => {
+const getRecords = async (accessToken, { retries = 1 } = {}) => {
   if (!retries) {
     console.log('** Too many Nintendo refresh attempts (Splatoon)')
     return { error: 'Too many Nintendo refresh attempts.' }
@@ -29,7 +32,7 @@ const getRecords = async (accessToken, { retries = 2 } = {}) => {
       'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148'
     }
   }
-  let recordsResponse
+  let recordsResponse = { records: {} }
   let xLeaderboardResponse
   let salmonRunResponse
   const now = moment(new Date())
@@ -43,10 +46,8 @@ const getRecords = async (accessToken, { retries = 2 } = {}) => {
     recordsResponse = await rawRecordsResponse.json()
     if (recordsResponse.code === 'AUTHENTICATION_ERROR') {
       console.log('--> Not successful. Refreshing.')
-      const updatedToken = await auth({
-        nintendoAccess: fs.readFileSync(`./${TOKEN_STORE}/nintendo-access`, 'utf8'),
-        regToken: fs.readFileSync(`./${TOKEN_STORE}/nintendo-device`, 'utf8')
-      })
+      const nintendoAccess = (fs.readFileSync(`./${TOKEN_STORE}/nintendo-access`, 'utf8') || '').trim()
+      const updatedToken = await auth(nintendoAccess)
       return await getRecords(updatedToken, { retries: retries - 1 })
     }
     console.log('--> Fetching Splatoon X Leaderboard')
