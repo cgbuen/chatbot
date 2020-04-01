@@ -24,6 +24,13 @@ const auth = async (authCode) => {
   try {
     const twitchResponseAuth = await fetch('https://id.twitch.tv/oauth2/token', twitchOptionsAuth)
     data = await twitchResponseAuth.json()
+    console.log('--> Writing Twitch tokens.')
+    fs.writeFileSync(`./${TOKEN_STORE}/twitch-access`, data.access_token)
+    fs.writeFileSync(`./${TOKEN_STORE}/twitch-refresh`, data.refresh_token)
+    if (!fs.existsSync(`./${TOKEN_STORE}/twitch-data-user`)) {
+      console.log('--> Requesting user ID')
+      await getOwnUserId(data.access_token)
+    }
   } catch (e) {
     console.log('==> Request fetch error auth', e)
     data = {
@@ -105,6 +112,8 @@ const getOwnUserId = async (accessToken, { retries = 3 } = {}) => {
     console.log('--> Beginning Twitch user fetch to find out own user ID')
     const users = await api.get('users', { version: 'helix', search: { login: BOT_USER } })
     data = users.data[0].id
+    console.log('--> Writing Twitch user info.')
+    fs.writeFileSync(`./${TOKEN_STORE}/twitch-data-user`, data)
   } catch (e) {
     if (e.body.error === 'Unauthorized') {
       console.log('==> Unauthorized getUserId response data error')

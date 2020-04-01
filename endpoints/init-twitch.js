@@ -37,12 +37,7 @@ const callback = async (req, res) => {
     return res.send('Authentication failed.')
   }
   console.log('--> Requesting Twitch auth.')
-  const tokenData = await requestTwitch.auth(req.query.code)
-  fs.writeFileSync(`./${TOKEN_STORE}/twitch-access`, tokenData.access_token)
-  fs.writeFileSync(`./${TOKEN_STORE}/twitch-refresh`, tokenData.refresh_token)
-  console.log('--> Requesting user ID')
-  const userId = await requestTwitch.getOwnUserId(tokenData.access_token)
-  fs.writeFileSync(`./${TOKEN_STORE}/twitch-data-user`, userId)
+  await requestTwitch.auth(req.query.code)
   return res.send(`
     <html>
       <body>

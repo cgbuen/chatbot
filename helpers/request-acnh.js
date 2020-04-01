@@ -11,13 +11,20 @@ const auth = async (nintendoAccess) => {
       cookie: `_gtoken=${gameWebToken}`
     }
   }
-  console.log('--> Fetching ACNH user to retrieve user/island IDs.')
-  const rawAcnhUserResponse = await fetch('https://web.sd.lp1.acbaa.srv.nintendo.net/api/sd/v1/users', requestOptionsUser)
-  const acnhUserResponse = await rawAcnhUserResponse.json()
-  const user = (acnhUserResponse.users || [])[0]
-  const userId = (user || {}).id
-  const islandId = ((user || {}).land || {}).id
-  fs.writeFileSync(`./${TOKEN_STORE}/acnh-data-land`, islandId)
+
+  let userId 
+  if (!fs.existsSync(`./${TOKEN_STORE}/acnh-data-land`)) {
+    console.log('--> Fetching ACNH user to retrieve user/island IDs.')
+    const rawAcnhUserResponse = await fetch('https://web.sd.lp1.acbaa.srv.nintendo.net/api/sd/v1/users', requestOptionsUser)
+    const acnhUserResponse = await rawAcnhUserResponse.json()
+    const user = (acnhUserResponse.users || [])[0]
+    userId = (user || {}).id
+    const islandId = ((user || {}).land || {}).id
+    console.log('--> Writing ACNH island info.')
+    fs.writeFileSync(`./${TOKEN_STORE}/acnh-data-land`, islandId)
+  } else {
+    userId = fs.readFileSync(`./${TOKEN_STORE}/acnh-data-land`, 'utf8')
+  }
 
   const requestOptionsAuthToken = {
     method: 'post',
@@ -32,7 +39,8 @@ const auth = async (nintendoAccess) => {
   console.log('--> Fetching ACNH auth_token.')
   const rawAcnhAuthTokenResponse = await fetch('https://web.sd.lp1.acbaa.srv.nintendo.net/api/sd/v1/auth_token', requestOptionsAuthToken)
   const acnhAuthTokenResponse = await rawAcnhAuthTokenResponse.json()
-  fs.writeFileSync(`./${TOKEN_STORE}/acnh-access`, acnhAuthTokenResponse)
+  console.log('--> Writing ACNH token.')
+  fs.writeFileSync(`./${TOKEN_STORE}/acnh-access`, acnhAuthTokenResponse.token)
   return acnhAuthTokenResponse
 }
 
@@ -108,6 +116,7 @@ const postKeyboard = async (accessToken, data, { retries = 1 } = {}) => {
 }
 
 module.exports = {
+  auth,
   getInfo,
   postKeyboard
 }

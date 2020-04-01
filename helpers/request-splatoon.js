@@ -17,6 +17,7 @@ const auth = async (nintendoAccess) => {
   const rawSlashResponse = await fetch('https://app.splatoon2.nintendo.net/?lang=en-US&na_country=US&na_lang=en-US', requestOptionsSlash)
   const slashResponseHeaders = rawSlashResponse.headers
   const iksmCookie = ((slashResponseHeaders.get('set-cookie') || '').match(/iksm_session=(.*?);/) || [])[1]
+  console.log('--> Writing Splatoon token.')
   fs.writeFileSync(`./${TOKEN_STORE}/splatoon-access`, iksmCookie)
   return iksmCookie
 }
@@ -68,5 +69,6 @@ const getRecords = async (accessToken, { retries = 1 } = {}) => {
 }
 
 module.exports = {
+  auth,
   getRecords
 }

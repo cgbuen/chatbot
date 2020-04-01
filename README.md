@@ -19,6 +19,8 @@ The endpoints gather data from the following sources:
 - Splatoon API (for gear, ranks, and other stats)
 - Animal Crossing: New Horizons API (for player/island info, as well as live
   keyboard inputs)
+- [s2s / flapg](https://github.com/frozenpandaman/splatnet2statink/wiki/api-docs)
+  APIs (for refreshing Nintendo tokens)
 - Your own local machine (for chat game stats, uptime, and other possible
   hardcoded data)
 
@@ -99,23 +101,17 @@ This kicks off a few things:
 
 ### Notes
 
-You'll have to hit the following endpoints if you're running this the first
-time. These retrieve your proper access and refresh tokens and store them into
-your `TOKEN_STORE` directory.
+You'll need to use an MitM proxy (e.g. Charles) to fetch your Nintendo
+`session_token`, and then place that value into a new file named
+_nintendo-access_, which is placed in your `TOKEN_STORE` directory.
 
-- [Twitch token initialization](http://localhost:3000/inittoken-twitch) (auto-opens on first load)
-- [Spotify token initialization](http://localhost:3000/inittoken-spotify)
+Then, you'll have to hit the following endpoints if you're running this the
+first time. These retrieve your proper access and refresh tokens and store them
+into your `TOKEN_STORE` directory.
 
-Additionally, you'll need to use an MitM proxy (e.g. Charles) to fetch your
-`iksm_session` cookie token, and then place that value into a new file named
-_splatoon-access_, which is placed in your `TOKEN_STORE` directory. 
-
-For Animal Crossing: New Horizons, you'll need to use the same MitM proxy to
-fetch the bearer token, which is to be placed in _acnh-access_ in the
-`TOKEN_STORE`.
-
-These two Nintendo tokens should be checked / updated through your MitM proxy
-before each stream, as they tend to expire every couple of days.
+- [Twitch token initialization](http://localhost:3000/init-twitch) (auto-opens on first load)
+- [Spotify token initialization](http://localhost:3000/init-spotify)
+- [Nintendo token initialization](http://localhost:3000/init-nintendo)
 
 Note that there is user-specific data that is generated upon use of this
 software, which end up getting stored in `TOKEN_STORE` despite not being tokens
