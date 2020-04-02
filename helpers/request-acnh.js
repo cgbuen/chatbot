@@ -13,17 +13,18 @@ const auth = async (nintendoAccess) => {
   }
 
   let userId 
-  if (!fs.existsSync(`./${TOKEN_STORE}/acnh-data-land`)) {
+  if (!fs.existsSync(`./${TOKEN_STORE}/acnh-data-land`) || !fs.existsSync(`./${TOKEN_STORE}/acnh-data-user`)) {
     console.log('--> Fetching ACNH user to retrieve user/island IDs.')
     const rawAcnhUserResponse = await fetch('https://web.sd.lp1.acbaa.srv.nintendo.net/api/sd/v1/users', requestOptionsUser)
     const acnhUserResponse = await rawAcnhUserResponse.json()
     const user = (acnhUserResponse.users || [])[0]
     userId = (user || {}).id
     const islandId = ((user || {}).land || {}).id
-    console.log('--> Writing ACNH island info.')
+    console.log('--> Writing ACNH island and user info.')
     fs.writeFileSync(`./${TOKEN_STORE}/acnh-data-land`, islandId)
+    fs.writeFileSync(`./${TOKEN_STORE}/acnh-data-user`, userId)
   } else {
-    userId = fs.readFileSync(`./${TOKEN_STORE}/acnh-data-land`, 'utf8')
+    userId = fs.readFileSync(`./${TOKEN_STORE}/acnh-data-user`, 'utf8')
   }
 
   const requestOptionsAuthToken = {
@@ -44,7 +45,7 @@ const auth = async (nintendoAccess) => {
   return acnhAuthTokenResponse
 }
 
-const getInfo = async (accessToken, islandId, { retries = 1 } = {}) => {
+const getInfo = async (accessToken, islandId, { retries = 2 } = {}) => {
   if (!retries) {
     console.log('** Too many Nintendo refresh attempts (ACNH)')
     return { error: 'Too many Nintendo refresh attempts.' }
@@ -80,7 +81,7 @@ const getInfo = async (accessToken, islandId, { retries = 1 } = {}) => {
   }
 }
 
-const postKeyboard = async (accessToken, data, { retries = 1 } = {}) => {
+const postKeyboard = async (accessToken, data, { retries = 2 } = {}) => {
   if (!retries) {
     console.log('** Too many Nintendo refresh attempts')
     return { error: 'Too many Nintendo refresh attempts.' }

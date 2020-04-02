@@ -22,7 +22,7 @@ const auth = async (nintendoAccess) => {
   return iksmCookie
 }
 
-const getRecords = async (accessToken, { retries = 1 } = {}) => {
+const getRecords = async (accessToken, { retries = 2 } = {}) => {
   if (!retries) {
     console.log('** Too many Nintendo refresh attempts (Splatoon)')
     return { error: 'Too many Nintendo refresh attempts.' }
