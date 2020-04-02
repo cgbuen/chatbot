@@ -1,7 +1,7 @@
 const fs = require('fs')
 const fetch = require('node-fetch')
 const requestNintendo = require('./request-nintendo')
-const { TOKEN_STORE } = require('../vars')
+const { TOKEN_STORE, NINTENDO_SESSION } = require('../vars')
 
 const auth = async (nintendoAccess) => {
   // also reauths - no refresh needed
@@ -68,8 +68,7 @@ const getInfo = async (accessToken, islandId, { retries = 2 } = {}) => {
       userRecordsResponse = await rawUserRecordsResponse.json()
     } else {
       console.log('==> Error getting island response. Has code:', islandRecordsResponse.code)
-      const nintendoAccess = (fs.readFileSync(`./${TOKEN_STORE}/nintendo-access`, 'utf8') || '').trim()
-      const nintendoAuthResponse = await auth(nintendoAccess)
+      const nintendoAuthResponse = await auth(NINTENDO_SESSION)
       return await getInfo(nintendoAuthResponse.token, islandId, { retries: retries - 1})
     }
   } catch (e) {
@@ -105,8 +104,7 @@ const postKeyboard = async (accessToken, data, { retries = 2 } = {}) => {
     console.log('--> ACNH keyboard POST response:', keyboardPostResponse)
     if (keyboardPostResponse.status !== 'success') {
       console.log('--> Not successful. Refreshing.')
-      const nintendoAccess = fs.readFileSync(`./${TOKEN_STORE}/spotify-refresh`, 'utf8')
-      const nintendoAuthResponse = await auth(nintendoAccess)
+      const nintendoAuthResponse = await auth(NINTENDO_SESSION)
       return await postKeyboard(nintendoAuthResponse.token, data, { retries: retries - 1 })
     }
   } catch (e) {

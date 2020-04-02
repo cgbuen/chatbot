@@ -2,7 +2,7 @@ const fs = require('fs')
 const fetch = require('node-fetch')
 const moment = require('moment')
 const requestNintendo = require('./request-nintendo')
-const { TOKEN_STORE } = require('../vars')
+const { TOKEN_STORE, NINTENDO_SESSION } = require('../vars')
 
 const auth = async (nintendoAccess) => {
   // also reauths - no refresh needed
@@ -47,8 +47,7 @@ const getRecords = async (accessToken, { retries = 2 } = {}) => {
     recordsResponse = await rawRecordsResponse.json()
     if (recordsResponse.code === 'AUTHENTICATION_ERROR') {
       console.log('--> Not successful. Refreshing.')
-      const nintendoAccess = (fs.readFileSync(`./${TOKEN_STORE}/nintendo-access`, 'utf8') || '').trim()
-      const updatedToken = await auth(nintendoAccess)
+      const updatedToken = await auth(NINTENDO_SESSION)
       return await getRecords(updatedToken, { retries: retries - 1 })
     }
     console.log('--> Fetching Splatoon X Leaderboard')
