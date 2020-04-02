@@ -96,7 +96,7 @@ module.exports = ({ startTime }) => {
               }
             } else if (!['PONG', 'USERSTATE', 'GLOBALUSERSTATE'].includes(command)) {
               // logs for joins, parts, etc.
-              fs.appendFileSync(dateFilename, `==> ${command} ${username} ${message || ''}\n`)
+              fs.appendFileSync(dateFilename, `[${moment().format()}] ${command} ${username} ${message || ''}\n`)
             }
           }
         }
