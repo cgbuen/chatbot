@@ -24,9 +24,7 @@ const callback = async (req, res) => {
   if (!csrfGenerator.verify(CSRF_SECRET, req.query.state)) {
     return res.send('Authentication failed.')
   }
-  const tokenData = await requestSpotify.auth(req.query.code)
-  fs.writeFileSync(`./${TOKEN_STORE}/spotify-access`, tokenData.access_token)
-  fs.writeFileSync(`./${TOKEN_STORE}/spotify-refresh`, tokenData.refresh_token)
+  await requestSpotify.auth(req.query.code)
   return res.send('Stored Spotify tokens.')
 }
 

@@ -21,8 +21,10 @@ const startTime = moment()
 
 const initSpotify = require('./endpoints/init-spotify')
 const initTwitch = require('./endpoints/init-twitch')
-app.get('/inittoken-spotify', initSpotify.init)
-app.get('/inittoken-twitch', initTwitch.init)
+const initNintendo = require('./endpoints/init-nintendo')
+app.get('/init-spotify', initSpotify.init)
+app.get('/init-twitch', initTwitch.init)
+app.get('/init-nintendo', initNintendo)
 app.get('/callback-spotify', initSpotify.callback)
 app.get('/callback-twitch', initTwitch.callback)
 app.get('/spotify.json', require('./endpoints/json-spotify'))
@@ -35,7 +37,7 @@ app.get('/pubsub', require('./endpoints/pubsub'))
 
 app.listen(port, () => console.log(`Spotify callback API endpoint app listening on port ${port}.`))
 if (LIVE) {
-  open(`${'http://localhost:3000'}${fs.existsSync(`./${TOKEN_STORE}/twitch-access`) ? '/chat' : '/inittoken-twitch'}`)
+  open(`${'http://localhost:3000'}${fs.existsSync(`./${TOKEN_STORE}/twitch-access`) ? '/chat' : '/init-twitch'}`)
   setTimeout(function() {
     open(`${'http://localhost:3000'}/pubsub`)
   }, 8000)

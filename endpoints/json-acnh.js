@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
   const accessToken = (fs.readFileSync(`./${TOKEN_STORE}/acnh-access`, 'utf8') || '').trim()
   const islandId = (fs.readFileSync(`./${TOKEN_STORE}/acnh-data-land`, 'utf8') || '').trim()
-  const acnhResponse = await requestAcnh.getInfo({ accessToken, islandId })
+  const acnhResponse = await requestAcnh.getInfo(accessToken, islandId)
   const calendar = ['stub', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   let acnhRecords
   try {
@@ -20,11 +20,11 @@ module.exports = async (req, res) => {
         image: userRecordsResponse.mJpeg,
         birthday: userRecordsResponse.mBirth
       },
-      neighbors: islandRecordsResponse.mNormalNpc, // array
+      neighbors: islandRecordsResponse.mNormalNpc || [],
       island: {
         name: islandRecordsResponse.mVNm,
-        fruit: islandRecordsResponse.mFruit.name,
-        foundedDate: userRecordsResponse.mTimeStamp, // object
+        fruit: islandRecordsResponse.mFruit || {},
+        foundedDate: userRecordsResponse.mTimeStamp || {},
       }
     }
     acnhRecords.output_player = `[Resident Representative] ${
@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
       [
         acnhRecords.island.name,
         `Founded ${acnhRecords.island.foundedDate.year}-${acnhRecords.island.foundedDate.month < 10 ? '0' : ''}${acnhRecords.island.foundedDate.month}-${acnhRecords.island.foundedDate.day}`,
-        `Fruit: ${acnhRecords.island.fruit}`,
+        `Fruit: ${acnhRecords.island.fruit.name}`,
       ].map(unbreak).join(', ')
     }`
   } catch (e) {

@@ -22,6 +22,9 @@ const auth = async (authCode) => {
   try {
     const spotifyResponseAuth = await fetch('https://accounts.spotify.com/api/token', spotifyOptionsAuth)
     data = await spotifyResponseAuth.json()
+    console.log('--> Writing Spotify tokens.')
+    fs.writeFileSync(`./${TOKEN_STORE}/spotify-access`, data.access_token)
+    fs.writeFileSync(`./${TOKEN_STORE}/spotify-refresh`, data.refresh_token)
   } catch (e) {
     console.log('==> Request fetch error auth', e)
     data = {
