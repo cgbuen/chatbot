@@ -189,7 +189,7 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
     }
   } catch (e) {
     console.log('==> Request twitch getAllStats api fetch error', e)
-    if (e.body.error === 'Unauthorized') {
+    if (e.body.error === 'Unauthorized' || e.body.error === 'Bad Request') {
       console.log('==> Unauthorized getAllStats response data error')
       const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
       data = await getAllStats(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
