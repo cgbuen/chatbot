@@ -45,7 +45,7 @@ const auth = async (nintendoAccess) => {
   return acnhAuthTokenResponse
 }
 
-const getInfo = async (accessToken, islandId, { retries = 2 } = {}) => {
+const getInfo = async (accessToken, userId, islandId, { retries = 2 } = {}) => {
   if (!retries) {
     console.log('** Too many Nintendo refresh attempts (ACNH)')
     return { error: 'Too many Nintendo refresh attempts.' }
@@ -62,14 +62,13 @@ const getInfo = async (accessToken, islandId, { retries = 2 } = {}) => {
     const rawIslandRecordsResponse = await fetch(`${'https://web.sd.lp1.acbaa.srv.nintendo.net'}/api/sd/v1/lands/${islandId}/profile?language=en-US`, requestOptions)
     islandRecordsResponse = await rawIslandRecordsResponse.json()
     if (!islandRecordsResponse.code) {
-      const { userId } = islandRecordsResponse.mVillager[0]
       console.log('--> Fetching User records')
       const rawUserRecordsResponse = await fetch(`${'https://web.sd.lp1.acbaa.srv.nintendo.net'}/api/sd/v1/users/${userId}/profile?language=en-US`, requestOptions)
       userRecordsResponse = await rawUserRecordsResponse.json()
     } else {
       console.log('==> Error getting island response. Has code:', islandRecordsResponse.code)
       const nintendoAuthResponse = await auth(NINTENDO_SESSION)
-      return await getInfo(nintendoAuthResponse.token, islandId, { retries: retries - 1})
+      return await getInfo(nintendoAuthResponse.token, islandId, { retries: retries - 1 })
     }
   } catch (e) {
     console.log('==> Request fetch ACNH data error', e)
