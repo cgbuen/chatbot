@@ -3,7 +3,7 @@ const moment = require('moment')
 const requestTwitch = require('../helpers/request-twitch')
 const { TOKEN_STORE } = require('../vars')
 
-module.exports = function up() {
+module.exports = async function up() {
   let uptime
   try {
     const accessToken = fs.readFileSync(`./${TOKEN_STORE}/spotify-access`)

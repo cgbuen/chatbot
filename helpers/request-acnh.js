@@ -68,7 +68,7 @@ const getInfo = async (accessToken, userId, islandId, { retries = 2 } = {}) => {
     } else {
       console.log('==> Error getting island response. Has code:', islandRecordsResponse.code)
       const nintendoAuthResponse = await auth(NINTENDO_SESSION)
-      return await getInfo(nintendoAuthResponse.token, islandId, { retries: retries - 1 })
+      return await getInfo(nintendoAuthResponse.token, userId, islandId, { retries: retries - 1 })
     }
   } catch (e) {
     console.log('==> Request fetch ACNH data error', e)
