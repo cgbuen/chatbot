@@ -83,7 +83,7 @@ module.exports = ({ startTime }) => {
                 msg = require('../commands/lurk')()
               }
               if (message.startsWith('!up')) {
-                msg = require('../commands/uptime')({ startTime })
+                msg = await require('../commands/uptime')()
               }
               if (message === '!commands') {
                 msg = require('../commands/commands')()

@@ -54,7 +54,7 @@ const getF = async ({ naIdToken, timestamp, requestId, iid }) => {
   const requestOptionsF = {
     headers: {
       'x-token': naIdToken,
-      'x-time': timestamp,
+      'x-time': timestamp + '',
       'x-guid': requestId,
       'x-hash': hash,
       'x-ver': '3',
@@ -120,8 +120,8 @@ const getGameWebToken = async (nintendoAccess, game) => {
   const initialTokenCreds = await getInitialTokenCreds(nintendoAccess)
 
   const fLogin = await getF({
-    timestamp: Date.now(),
-    naIdToken: initialTokenCreds.id_token,
+    timestamp: Math.floor(Date.now()/1000),
+    naIdToken: initialTokenCreds.access_token,
     requestId: uuid.v4(),
     iid: 'nso'
   })
