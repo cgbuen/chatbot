@@ -72,7 +72,7 @@ const getNintendoWebApiServerCredential = async (parameter) => {
     method: 'post',
     headers: {
       'content-type': 'application/json',
-      'x-productversion': '1.6.1.2',
+      'x-productversion': '1.8.0',
       'x-platform': 'Android', // must be android due to flapg
     },
     body: JSON.stringify({ parameter })
@@ -89,7 +89,7 @@ const getGameList = async (bearerToken) => {
     headers: {
       'authorization': `Bearer ${bearerToken}`,
       'content-type': 'application/json',
-      'x-productversion': '1.6.1.2',
+      'x-productversion': '1.8.0',
       'x-platform': 'Android', // must be android due to flapg
     }
   }
@@ -105,7 +105,7 @@ const getWebServiceToken = async (bearerToken, parameter) => {
     headers: {
       'authorization': `Bearer ${bearerToken}`,
       'content-type': 'application/json',
-      'x-productversion': '1.6.1.2',
+      'x-productversion': '1.8.0',
       'x-platform': 'Android', // must be android due to flapg
     },
     body: JSON.stringify({ parameter })
