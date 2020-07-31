@@ -82,7 +82,14 @@ const lookupUser = async (accessToken, userInput, { retries = 3 } = {}) => {
       token: accessToken,
       username: BOT_USER
     })
-    data = await api.get('users', { version: 'helix', search: { login: userInput } })
+    data = await api.get('users', {
+      version: 'helix',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+        Authorization: `Bearer ${TWITCH_CLIENT_SECRET}`
+      },
+      search: { login: userInput }
+    })
   } catch (e) {
     console.log('==> Request Twitch lookupUser api fetch error', e)
     if (e.body.error === 'Unauthorized') {
@@ -157,10 +164,18 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
       }
     })
     const bitsLeadersAlltimeResponse = await api.get('bits/leaderboard', {
-      version: 'helix'
+      version: 'helix',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+        Authorization: `Bearer ${TWITCH_CLIENT_SECRET}`
+      }
     })
     const bitsLeadersMonthResponse = await api.get('bits/leaderboard', {
       version: 'helix',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+        Authorization: `Bearer ${TWITCH_CLIENT_SECRET}`
+      },
       search: {
         period: 'month',
         started_at: moment().startOf('month').format()
@@ -168,6 +183,10 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
     })
     const bitsLeadersWeekResponse = await api.get('bits/leaderboard', {
       version: 'helix',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+        Authorization: `Bearer ${TWITCH_CLIENT_SECRET}`
+      },
       search: {
         period: 'week',
         started_at: moment().startOf('week').format()
@@ -175,6 +194,10 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
     })
     const streamsResponse = await api.get('streams', {
       version: 'helix',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+        Authorization: `Bearer ${TWITCH_CLIENT_SECRET}`
+      },
       search: {
         user_id: user
       }
