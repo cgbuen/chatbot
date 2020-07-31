@@ -57,32 +57,15 @@ with a lot of different versions.
 
     npm ci
 
-## Configure
+## Configuration
 
-Add a vars.js here (which is .gitignore'd) in the root directory, with the
-following format:
-
-    module.exports = {
-      BOT_USER: '[your bot's twitch handle]',
-      CHANNEL: '[your channel]',
-      GAME_ID: '[your gaming id of choice]',
-      SPOTIFY_CLIENT_ID: '[your spotify app's client_id]',
-      SPOTIFY_CLIENT_SECRET: '[your spotify app's client_secret]',
-      TWITCH_CLIENT_ID: '[your twitch app's client_id]',
-      TWITCH_CLIENT_SECRET: '[your twitch app's client_secret]',
-      NINTENDO_SESSION: '[your Nintendo `session_token`]',
-      DISCORD: '[link to your discord server]',
-      COUNTER: '[extension-less filename for local JSON counter file]',
-      TOKEN_STORE: '[local directory where tokens are stored]'
-    }
-
-### Notes
+Duplicate vars.js.example in the root directory and rename it to vars.js. Notes:
 
 - `BOT_USER` can be the same handle you use for your channel (`CHANNEL`).
 - `GAME_ID` example: Nintendo Switch Friend Code.
-- The default `COUNTER` (i.e. what's in _.gitignore_) should be "stats".
-- Write your `TOKEN_STORE` value into a new line in _.gitignore_. The default
-  (i.e. what's in _.gitignore_) should be "token-store".
+- The default `COUNTER` value is "stats", and the default `TOKEN_STORE` value is
+  "token-store". If you want to change either or both of these values, make sure
+  to update the corresponding values in _.gitignore_.
 - `NINTENDO_SESSION` is the `session_token` that must be retrieved using an MitM
   proxy (e.g. Charles) into your personal device's Nintendo Switch app. Note
   that this goes here as your "configurable" variable rather than being placed

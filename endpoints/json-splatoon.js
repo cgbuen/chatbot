@@ -129,6 +129,7 @@ module.exports = async (req, res) => {
     const escapeImageSingle = (x, imgClass) => `${`scgbimage_${assetsDomain}${x}|srcClassSep|${imgClass}_0_ecgbimage`}`
     const escapeImagesStats = (x, i) => `${`scgbimage_${assetsDomain}${x}|srcClassSep|splatoonweapon_${i}_ecgbimage`}`
     const escapeImagesSkill = (x, i) => `${`scgbimage_${assetsDomain}${x.image}|srcClassSep|splatoonskill_${i + 1}_ecgbimage`}`
+    const hasImages = x => x.image
 
     // append all output_ values based on what's splatoonStats already has
     splatoonStats.output_ranks = `[Ranks] ${
@@ -166,19 +167,19 @@ module.exports = async (req, res) => {
         `[Current Headgear]`,
         `${playerInfo.player.head.name} (${'\u2605'.repeat(playerInfo.player.head.rarity + 1)})`,
         `(Main: ${escapeImageSingle(playerInfo.player.head_skills.main.image, 'splatoonskill')},`,
-        `Subs: ${playerInfo.player.head_skills.subs.map(escapeImagesSkill).join(', ')})`
+        `Subs: ${playerInfo.player.head_skills.subs.filter(hasImages).map(escapeImagesSkill).join(', ')})`
       ].map(unbreak).join(' '),
       clothes: [
         `[Current Clothes]`,
         `${playerInfo.player.clothes.name} (${'\u2605'.repeat(playerInfo.player.clothes.rarity + 1)})`,
         `(Main: ${escapeImageSingle(playerInfo.player.clothes_skills.main.image, 'splatoonskill')},`,
-        `Subs: ${playerInfo.player.clothes_skills.subs.map(escapeImagesSkill).join(', ')})`
+        `Subs: ${playerInfo.player.clothes_skills.subs.filter(hasImages).map(escapeImagesSkill).join(', ')})`
       ].map(unbreak).join(' '),
       shoes: [
         `[Current Shoes]`,
         `${playerInfo.player.shoes.name} (${'\u2605'.repeat(playerInfo.player.shoes.rarity + 1)})`,
         `(Main: ${escapeImageSingle(playerInfo.player.shoes_skills.main.image, 'splatoonskill')},`,
-        `Subs: ${playerInfo.player.shoes_skills.subs.map(escapeImagesSkill).join(', ')})`
+        `Subs: ${playerInfo.player.shoes_skills.subs.filter(hasImages).map(escapeImagesSkill).join(', ')})`
       ].map(unbreak).join(' '),
     }
     splatoonStats.output_lifetimeWL = unbreak(`[Lifetime W-L] ${splatoonStats.lifetimeWL}`)
