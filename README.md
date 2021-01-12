@@ -59,7 +59,11 @@ with a lot of different versions.
 
 ## Configuration
 
-Duplicate vars.js.example in the root directory and rename it to vars.js. Notes:
+Duplicate build-command.example in the root directory and rename it to
+build-command.
+
+Then, duplicate vars.js.example in the root directory and rename it to vars.js.
+Notes:
 
 - `BOT_USER` can be the same handle you use for your channel (`CHANNEL`).
 - `GAME_ID` example: Nintendo Switch Friend Code.

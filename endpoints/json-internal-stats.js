@@ -1,12 +1,12 @@
 const fs = require('fs')
 const moment = require('moment')
-const { BUILD, COUNTER } = require('../vars')
+const { COUNTER } = require('../vars')
 const unbreak = require('../helpers/unbreak')
 
 module.exports = (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
 
-  const build = BUILD
+  const build = fs.readFileSync(`./build-command`)
   const charity = "Donations to this channel will be sent off to the San Francisco-Marin Food Bank. You can also donate directly to them through the link at the bottom of the channel notes."
 
   let dict

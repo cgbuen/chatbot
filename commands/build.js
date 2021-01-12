@@ -1,5 +1,5 @@
-const { BUILD } = require('../vars')
+const fs = require('fs')
 
 module.exports = function build() {
-  return BUILD
+  return fs.readFileSync(`./build-command`)
 }

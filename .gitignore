@@ -1,4 +1,5 @@
 .DS_Store
+build-command
 node_modules
 token-store
 twitch-logs

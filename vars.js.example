@@ -9,6 +9,5 @@ module.exports = {
   NINTENDO_SESSION: '[your Nintendo `session_token`]',
   DISCORD: '[link to your discord server]',
   COUNTER: 'stats',
-  TOKEN_STORE: 'token-store',
-  BUILD: 'build'
+  TOKEN_STORE: 'token-store'
 }
