@@ -49,6 +49,9 @@ module.exports = ({ startTime }) => {
             if (command === 'PRIVMSG') {
               fs.appendFileSync(dateFilename, `[${moment().format()}] <${username}> ${message}\n`)
               let msg
+              if (['!build', '!specs'].includes(message)) {
+                msg = require('../commands/build')()
+              }
               if (/^\!(chri(s|d)?_?s?u(c|k|x)|rekt)/.test(message)) {
                 msg = require('../commands/chrissucks')({ username })
               }

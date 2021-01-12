@@ -6,6 +6,7 @@ const unbreak = require('../helpers/unbreak')
 module.exports = (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
 
+  const build = fs.readFileSync(`./build-command`)
   const charity = "Donations to this channel will be sent off to the San Francisco-Marin Food Bank. You can also donate directly to them through the link at the bottom of the channel notes."
 
   let dict
@@ -48,8 +49,10 @@ module.exports = (req, res) => {
 
   const data = {
     charity,
+    build,
     chrissucks,
     output_charity: `[Charity] ${charity}`,
+    output_build: `[Build] ${build}`,
     output_chrissucks
   }
   return res.send(data)
