@@ -86,7 +86,6 @@ const lookupUser = async (accessToken, userInput, { retries = 3 } = {}) => {
       version: 'helix',
       headers: {
         'client-id': TWITCH_CLIENT_ID,
-        Authorization: `Bearer ${TWITCH_CLIENT_SECRET}`
       },
       search: { login: userInput }
     })
@@ -97,7 +96,7 @@ const lookupUser = async (accessToken, userInput, { retries = 3 } = {}) => {
       const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
       data = await lookupUser(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
     } else {
-      console.log('==> Miscellaneous Twitch user lookup error')
+      console.log('==> Miscellaneous Twitch user lookup error', e)
       data = []
     }
   }
@@ -123,12 +122,12 @@ const getOwnUserId = async (accessToken, { retries = 3 } = {}) => {
     fs.writeFileSync(`./${TOKEN_STORE}/twitch-data-user`, data)
   } catch (e) {
     if (e.body.error === 'Unauthorized') {
-      console.log('==> Unauthorized getUserId response data error')
+      console.log('==> Unauthorized getOwnUserId response data error', e)
       const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
       data = await getAllStats(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
     } else {
       data = {
-        error: 'twitch api fetch error: stats'
+        error: 'twitch api fetch error: getOwnUserId'
       }
     }
   }
@@ -167,14 +166,12 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
       version: 'helix',
       headers: {
         'client-id': TWITCH_CLIENT_ID,
-        Authorization: `Bearer ${TWITCH_CLIENT_SECRET}`
       }
     })
     const bitsLeadersMonthResponse = await api.get('bits/leaderboard', {
       version: 'helix',
       headers: {
         'client-id': TWITCH_CLIENT_ID,
-        Authorization: `Bearer ${TWITCH_CLIENT_SECRET}`
       },
       search: {
         period: 'month',
@@ -185,7 +182,6 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
       version: 'helix',
       headers: {
         'client-id': TWITCH_CLIENT_ID,
-        Authorization: `Bearer ${TWITCH_CLIENT_SECRET}`
       },
       search: {
         period: 'week',
@@ -196,7 +192,6 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
       version: 'helix',
       headers: {
         'client-id': TWITCH_CLIENT_ID,
-        Authorization: `Bearer ${TWITCH_CLIENT_SECRET}`
       },
       search: {
         user_id: user
@@ -217,8 +212,155 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
       const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
       data = await getAllStats(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
     } else {
+      console.log('==> Uncaught getAllStats error', e)
       data = {
         error: 'twitch api fetch error: stats'
+      }
+    }
+  }
+  return data
+}
+
+const getMods = async (accessToken, { retries = 3 } = {}) => {
+  let data
+  if (!retries) {
+    console.log('==> Too many Twitch mod fetching attempts error')
+    data = { error: 'Too many mod fetching attempts.' }
+    return data
+  }
+  try {
+    const { api } = new TwitchJs({
+      token: accessToken,
+      username: BOT_USER
+    })
+    console.log('--> Beginning Twitch fetch mods list')
+    data = await api.get('moderation/moderators', {
+      version: 'helix',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+      },
+      search: {
+        broadcaster_id: (fs.readFileSync(`./${TOKEN_STORE}/twitch-data-user`, 'utf8') || '').trim()
+      }
+    })
+  } catch (e) {
+    if (e.body.error === 'Unauthorized') {
+      console.log('==> Unauthorized getMods response data error', e)
+      const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
+      data = await getMods(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
+    } else {
+      console.log('==> Uncaught getMods error', e)
+      data = {
+        error: 'twitch api fetch error: getMods'
+      }
+    }
+  }
+  return data
+}
+
+const getGame = async (gameName, accessToken, { retries = 3 } = {}) => {
+  let data
+  if (!retries) {
+    console.log('==> Too many Twitch game id fetching attempts error')
+    data = { error: 'Too many game id fetching attempts.' }
+    return data
+  }
+  try {
+    const { api } = new TwitchJs({
+      token: accessToken,
+      username: BOT_USER
+    })
+    console.log('--> Beginning Twitch fetch game id', gameName)
+    data = await api.get('games', {
+      version: 'helix',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+      },
+      search: {
+        name: gameName
+      }
+    })
+  } catch (e) {
+    if (e.body && e.body.error === 'Unauthorized') {
+      console.log('==> Unauthorized getGame response data error', e)
+      const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
+      data = await getGame(gameName, twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
+    } else {
+      console.log('==> Uncaught getGame error', e)
+      data = {
+        error: 'twitch api fetch error: getGame'
+      }
+    }
+  }
+  return data
+}
+
+const setGame = async (gameId, accessToken, { retries = 3 } = {}) => {
+  let data
+  if (!retries) {
+    console.log('==> Too many Twitch game setting attempts error')
+    data = { error: 'Too many game setting attempts.' }
+    return data
+  }
+  try {
+    console.log('--> Beginning Twitch game name setting')
+    // need to use node-fetch due to twitch-js lack of PATCH request support
+    data = await fetch(`https://api.twitch.tv/helix/channels?broadcaster_id=${(fs.readFileSync(`./${TOKEN_STORE}/twitch-data-user`, 'utf8') || '').trim()}`, {
+      method: 'PATCH',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+        Authorization: `Bearer ${accessToken}`,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({ game_id: gameId })
+    })
+  } catch (e) {
+    if (e.body.error === 'Unauthorized') {
+      console.log('==> Unauthorized setGame response data error', e)
+      const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
+      data = await setGame(gameId, twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
+    } else {
+      console.log('==> Uncaught setGame error', e)
+      data = {
+        error: 'twitch api fetch error: setGame'
+      }
+    }
+  }
+  return data
+}
+
+const setTitle = async (title, accessToken, { retries = 3 } = {}) => {
+  let data
+  if (!retries) {
+    console.log('==> Too many Twitch title setting attempts error')
+    data = { error: 'Too many title setting attempts.' }
+    return data
+  }
+  try {
+    const { api } = new TwitchJs({
+      token: accessToken,
+      username: BOT_USER
+    })
+    console.log('--> Beginning Twitch title setting')
+    // need to use node-fetch due to twitch-js lack of PATCH request support
+    data = await fetch(`https://api.twitch.tv/helix/channels?broadcaster_id=${(fs.readFileSync(`./${TOKEN_STORE}/twitch-data-user`, 'utf8') || '').trim()}`, {
+      method: 'PATCH',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+        Authorization: `Bearer ${accessToken}`,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({ title })
+    })
+  } catch (e) {
+    if (e.body.error === 'Unauthorized') {
+      console.log('==> Unauthorized setTitle response data error', e)
+      const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
+      data = await setTitle(title, twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
+    } else {
+      console.log('==> Uncaught setTitle error', e)
+      data = {
+        error: 'twitch api fetch error: setTitle'
       }
     }
   }
@@ -230,5 +372,9 @@ module.exports = {
   refresh,
   lookupUser,
   getOwnUserId,
-  getAllStats
+  getAllStats,
+  getMods,
+  getGame,
+  setGame,
+  setTitle
 }

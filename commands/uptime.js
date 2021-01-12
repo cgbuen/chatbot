@@ -6,7 +6,6 @@ const { TOKEN_STORE } = require('../vars')
 module.exports = async function up() {
   let uptime
   try {
-    const accessToken = fs.readFileSync(`./${TOKEN_STORE}/spotify-access`)
     const twitchStatsResponses = await requestTwitch.getAllStats(fs.readFileSync(`./${TOKEN_STORE}/twitch-access`, 'utf8').trim())
     const startTime = moment(twitchStatsResponses.streamsResponse.data[0].startedAt)
     const currTime = moment()

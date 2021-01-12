@@ -24,6 +24,8 @@ const init = async (req, res) => {
       'channel_subscriptions',
       'chat:edit',
       'chat:read',
+      'moderation:read',
+      'user:edit:broadcast',
       'whispers:edit',
       'whispers:read',
     ].join('__PLUS__')

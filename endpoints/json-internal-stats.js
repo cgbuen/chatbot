@@ -6,7 +6,14 @@ const unbreak = require('../helpers/unbreak')
 module.exports = (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
 
-  const build = fs.readFileSync(`./build-command`)
+  let build
+  try {
+    const { BUILD } = JSON.parse(fs.readFileSync(`./command-content.json`))
+    build = BUILD
+  } catch (e) {
+    console.log('==> Could not parse command-content')
+    build = 'n/a'
+  }
   const charity = "Donations to this channel will be sent off to the San Francisco-Marin Food Bank. You can also donate directly to them through the link at the bottom of the channel notes."
 
   let dict
