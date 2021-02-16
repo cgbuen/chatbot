@@ -1,0 +1,11 @@
+{
+  "BUILD": "your build",
+  "BUILD_IS_KEYBOARD": true,
+  "BUILD_NOT_KEYBOARD_MSG": "message for when build is not a keyboard",
+  "CHARITY": "charity message",
+  "SOCIALS_ALL": "message for all social media account links",
+  "SOCIALS_IG": "instagram link",
+  "SOCIALS_TWITTER": "twitter link",
+  "HYPE_GAME": "game excitement message",
+  "HYPE_SUB": "sub excitement message"
+}

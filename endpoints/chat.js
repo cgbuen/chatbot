@@ -49,10 +49,16 @@ module.exports = ({ startTime }) => {
             if (command === 'PRIVMSG') {
               fs.appendFileSync(dateFilename, `[${moment().format()}] <${username}> ${message}\n`)
               let msg
-              if (['!build', '!specs'].includes(message)) {
-                msg = require('../commands/build')()
+              if (['!build', '!specs', '!keyboard'].includes(message)) {
+                msg = require('../commands/build')(message)
               }
-              if (/^\!(chri(s|d)?_?s?u(c|k|x)|rekt)/.test(message)) {
+              if (/^\!(game|category|title)\s+(.*?)\s*$/.test(message)) {
+                msg = await require('../commands/stream-status')(username, message)
+              }
+              if (['!socials', '!instagram', '!twitter'].includes(message)) {
+                msg = require('../commands/socials')(message)
+              }
+              if (/^\!((c|k)h?ri(s|d|z)?_?s?u(c|k|x)|rekt)/.test(message)) {
                 msg = require('../commands/chrissucks')({ username })
               }
               if (message === '!rank') {
@@ -79,8 +85,8 @@ module.exports = ({ startTime }) => {
               if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
                 msg = require('../commands/charity')()
               }
-              if (message === '!hype') {
-                msg = require('../commands/hype')()
+              if (['!hype', '!subhype'].includes(message)) {
+                msg = require('../commands/hype')(message)
               }
               if (message === '!lurk') {
                 msg = require('../commands/lurk')()
@@ -112,8 +118,8 @@ module.exports = ({ startTime }) => {
           const twitchTokenDataUpdated = await requestTwitch.refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
           return connectToChat(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
         } else {
-          const msg = 'Error unrelated to authentication failure. Try re-initializing tokens by hitting /inittoken-twitch.'
-          const htmlMsg = `Error unrelated to authentication failure. Try re-initializing tokens by hitting the <a href="/inittoken-twitch">Twitch token initialization endpoint</a>.`
+          const msg = 'Error unrelated to authentication failure. Try re-initializing tokens by hitting /init-twitch.'
+          const htmlMsg = `Error unrelated to authentication failure. Try re-initializing tokens by hitting the <a href="/init-twitch">Twitch token initialization endpoint</a>.`
           console.log(`** ${msg}`, e)
           return res.send(`
             <html>

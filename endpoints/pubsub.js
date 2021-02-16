@@ -47,8 +47,8 @@ module.exports = async (req, res) => {
               ws.close()
               return connectToPubSub(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
             } else {
-              const msg = 'Error unrelated to authentication failure. Try re-initializing tokens by hitting /inittoken-twitch.'
-              const htmlMsg = `Error unrelated to authentication failure. Try re-initializing tokens by hitting the <a href="/inittoken-twitch">Twitch token initialization endpoint</a>.`
+              const msg = 'Error unrelated to authentication failure. Try re-initializing tokens by hitting /init-twitch.'
+              const htmlMsg = `Error unrelated to authentication failure. Try re-initializing tokens by hitting the <a href="/init-twitch">Twitch token initialization endpoint</a>.`
               console.log(`** ${msg}`)
               ws.close()
               return res.send(`
