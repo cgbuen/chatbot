@@ -3,6 +3,7 @@
   "BUILD_IS_KEYBOARD": true,
   "BUILD_NOT_KEYBOARD_MSG": "message for when build is not a keyboard",
   "CHARITY": "charity message",
+  "COLLECTION": "collection message",
   "FILM": "service message",
   "PC": "primary pc specs",
   "PC_STREAM": "secondary pc specs",

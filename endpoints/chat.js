@@ -100,6 +100,9 @@ module.exports = ({ startTime }) => {
               if (message === '!film') {
                 msg = require('../commands/film')()
               }
+              if (message === '!collection') {
+                msg = require('../commands/collection')()
+              }
               if (message.startsWith('!up')) {
                 msg = await require('../commands/uptime')()
               }
