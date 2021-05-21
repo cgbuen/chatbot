@@ -72,7 +72,7 @@ const getNintendoWebApiServerCredential = async (parameter) => {
     method: 'post',
     headers: {
       'content-type': 'application/json',
-      'x-productversion': '1.9.0',
+      'x-productversion': '1.10.1',
       'x-platform': 'Android', // must be android due to flapg
     },
     body: JSON.stringify({ parameter })
