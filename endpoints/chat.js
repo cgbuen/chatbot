@@ -91,6 +91,15 @@ module.exports = ({ startTime }) => {
               if (message === '!lurk') {
                 msg = require('../commands/lurk')()
               }
+              if (message === '!pc') {
+                msg = require('../commands/pc')()
+              }
+              if (message === '!streampc') {
+                msg = require('../commands/pc-stream')()
+              }
+              if (message === '!film') {
+                msg = require('../commands/film')()
+              }
               if (message.startsWith('!up')) {
                 msg = await require('../commands/uptime')()
               }
