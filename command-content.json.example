@@ -7,5 +7,14 @@
   "SOCIALS_IG": "instagram link",
   "SOCIALS_TWITTER": "twitter link",
   "HYPE_GAME": "game excitement message",
-  "HYPE_SUB": "sub excitement message"
+  "HYPE_SUB": "sub excitement message",
+  "SETTINGS_TICKER": {
+   "BUILD": true,
+   "DEFAULTS": false,
+   "SPOTIFY": true,
+   "ACNH": false,
+   "SPLATOON_SOLOQ": false,
+   "SPLATOON_LEAGUE": false,
+   "SPLATOON_SALMON": false
+  }
 }

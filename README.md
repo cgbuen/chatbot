@@ -59,8 +59,9 @@ with a lot of different versions.
 
 ## Configuration
 
-Duplicate build-command.example in the root directory and rename it to
-build-command.
+Duplicate command-content.json.example in the root directory and rename it to
+command-content.json. This can be configured to show different information from
+the chatbot and in the ticker, including data and settings.
 
 Then, duplicate vars.js.example in the root directory and rename it to vars.js.
 Notes:
