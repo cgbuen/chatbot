@@ -49,29 +49,14 @@ module.exports = ({ startTime }) => {
             if (command === 'PRIVMSG') {
               fs.appendFileSync(dateFilename, `[${moment().format()}] <${username}> ${message}\n`)
               let msg
-              if (['!build', '!specs', '!keyboard'].includes(message)) {
-                msg = require('../commands/build')(message)
-              }
               if (/^\!(game|category|title)\s+(.*?)\s*$/.test(message)) {
                 msg = await require('../commands/stream-status')(username, message)
-              }
-              if (['!socials', '!instagram', '!twitter'].includes(message)) {
-                msg = require('../commands/socials')(message)
               }
               if (/^\!((c|k)h?ri(s|d|z)?_?s?u(c|k|x)|rekt)/.test(message)) {
                 msg = require('../commands/chrissucks')({ username })
               }
               if (message === '!rank') {
                 msg = require('../commands/rank')({ username })
-              }
-              if (message === '!fc') {
-                msg = require('../commands/fc')()
-              }
-              if (message === '!discord') {
-                msg = require('../commands/discord')()
-              }
-              if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
-                msg = require('../commands/controls')()
               }
               if (message === '!song') {
                 msg = await require('../commands/spotify-song')()
@@ -82,29 +67,68 @@ module.exports = ({ startTime }) => {
               if (/^\!(so|shoutout)\s@?[\w]+(\s|$)/.test(message)) {
                 msg = await require('../commands/so')({ message })
               }
-              if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
-                msg = require('../commands/charity')()
-              }
-              if (['!hype', '!subhype'].includes(message)) {
-                msg = require('../commands/hype')(message)
-              }
-              if (message === '!lurk') {
-                msg = require('../commands/lurk')()
-              }
-              if (message === '!pc') {
-                msg = require('../commands/pc')()
-              }
-              if (message === '!streampc') {
-                msg = require('../commands/pc-stream')()
-              }
-              if (message === '!film') {
-                msg = require('../commands/film')()
-              }
               if (message.startsWith('!up')) {
                 msg = await require('../commands/uptime')()
               }
+              if (['!build', '!specs'].includes(message)) {
+                msg = require('../commands/simple')('BUILD')
+              }
+              if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
+                msg = require('../commands/simple')('CHARITY')
+              }
+              if (['!collection', '!keyboards', '!boards'].includes(message)) {
+                msg = require('../commands/simple')('COLLECTION')
+              }
+              if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
+                msg = require('../commands/simple')('CONTROLS')
+              }
+              if (message === '!discord') {
+                msg = require('../commands/simple')('DISCORD')
+              }
+              if (message === '!film') {
+                msg = require('../commands/simple')('FILM')
+              }
+              if (message === '!fc') {
+                msg = require('../commands/simple')('GAME_ID')
+              }
+              if (['!gear', '!camera', '!cameras', '!cam', '!cams', '!facecam', '!lighting', '!audio', '!soldering', '!desoldering', '!joycon', '!scanning'].includes(message)) {
+                msg = require('../commands/simple')('GEAR')
+              }
+              if (message === '!hype') {
+                msg = require('../commands/simple')('HYPE_GAME')
+              }
+              if (message === '!subhype') {
+                msg = require('../commands/simple')('HYPE_SUB')
+              }
+              if (['!keyboard', '!board'].includes(message)) {
+                msg = require('../commands/simple')('KEYBOARD')
+              }
+              if (message === '!lurk') {
+                msg = require('../commands/simple')('LURK')
+              }
+              if (message === '!pc') {
+                msg = require('../commands/simple')('PC')
+              }
+              if (message === '!streampc') {
+                msg = require('../commands/simple')('PC_STREAM')
+              }
+              if (message === '!socials') {
+                msg = require('../commands/simple')('SOCIALS_ALL')
+              }
+              if (message === '!instagram') {
+                msg = require('../commands/simple')('SOCIALS_IG')
+              }
+              if (['!git', '!github'].includes(message)) {
+                msg = require('../commands/simple')('SOCIALS_GITHUB')
+              }
+              if (['!youtube', '!yt', '!vods', '!vod'].includes(message)) {
+                msg = require('../commands/simple')('SOCIALS_YOUTUBE_VODS')
+              }
+              if (['!keeb'].includes(message)) {
+                msg = require('../commands/simple')('DISAPPROVAL')
+              }
               if (message === '!commands') {
-                msg = require('../commands/commands')()
+                msg = require('../commands/simple')('COMMANDS')
               }
               if (msg) {
                 // new moment used here, in case wait time for msg construction
