@@ -67,7 +67,6 @@ Then, duplicate vars.js.example in the root directory and rename it to vars.js.
 Notes:
 
 - `BOT_USER` can be the same handle you use for your channel (`CHANNEL`).
-- `GAME_ID` example: Nintendo Switch Friend Code.
 - The default `COUNTER` value is "stats", and the default `TOKEN_STORE` value is
   "token-store". If you want to change either or both of these values, make sure
   to update the corresponding values in _.gitignore_.

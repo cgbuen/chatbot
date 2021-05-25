@@ -55,8 +55,14 @@ module.exports = ({ startTime }) => {
               if (/^\!(game|category|title)\s+(.*?)\s*$/.test(message)) {
                 msg = await require('../commands/stream-status')(username, message)
               }
-              if (['!socials', '!instagram', '!twitter'].includes(message)) {
-                msg = require('../commands/socials')(message)
+              if (message === '!socials') {
+                msg = require('../commands/simple')('SOCIALS_ALL')
+              }
+              if (message === '!instagram') {
+                msg = require('../commands/simple')('SOCIALS_IG')
+              }
+              if (message === '!twitter') {
+                msg = require('../commands/simple')('SOCIALS_TWITTER')
               }
               if (/^\!((c|k)h?ri(s|d|z)?_?s?u(c|k|x)|rekt)/.test(message)) {
                 msg = require('../commands/chrissucks')({ username })
@@ -65,13 +71,13 @@ module.exports = ({ startTime }) => {
                 msg = require('../commands/rank')({ username })
               }
               if (message === '!fc') {
-                msg = require('../commands/fc')()
+                msg = require('../commands/simple')('GAME_ID')
               }
               if (message === '!discord') {
-                msg = require('../commands/discord')()
+                msg = require('../commands/simple')('DISCORD')
               }
               if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
-                msg = require('../commands/controls')()
+                msg = require('../commands/simple')('CONTROLS')
               }
               if (message === '!song') {
                 msg = await require('../commands/spotify-song')()
@@ -83,31 +89,34 @@ module.exports = ({ startTime }) => {
                 msg = await require('../commands/so')({ message })
               }
               if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
-                msg = require('../commands/charity')()
+                msg = require('../commands/simple')('CHARITY')
               }
-              if (['!hype', '!subhype'].includes(message)) {
-                msg = require('../commands/hype')(message)
+              if (message === '!hype') {
+                msg = require('../commands/simple')('HYPE_GAME')
+              }
+              if (message === '!subhype') {
+                msg = require('../commands/simple')('HYPE_SUB')
               }
               if (message === '!lurk') {
-                msg = require('../commands/lurk')()
+                msg = require('../commands/simple')('LURK')
               }
               if (message === '!pc') {
-                msg = require('../commands/pc')()
+                msg = require('../commands/simple')('PC')
               }
               if (message === '!streampc') {
-                msg = require('../commands/pc-stream')()
+                msg = require('../commands/simple')('PC_STREAM')
               }
               if (message === '!film') {
-                msg = require('../commands/film')()
+                msg = require('../commands/simple')('FILM')
               }
               if (message === '!collection') {
-                msg = require('../commands/collection')()
+                msg = require('../commands/simple')('COLLECTION')
               }
               if (message.startsWith('!up')) {
                 msg = await require('../commands/uptime')()
               }
               if (message === '!commands') {
-                msg = require('../commands/commands')()
+                msg = require('../commands/simple')('COMMANDS')
               }
               if (msg) {
                 // new moment used here, in case wait time for msg construction
