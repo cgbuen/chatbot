@@ -49,7 +49,7 @@ module.exports = ({ startTime }) => {
             if (command === 'PRIVMSG') {
               fs.appendFileSync(dateFilename, `[${moment().format()}] <${username}> ${message}\n`)
               let msg
-              if (['!build', '!specs', '!keyboard'].includes(message)) {
+              if (['!build', '!specs'].includes(message)) {
                 msg = require('../commands/build')(message)
               }
               if (/^\!(game|category|title)\s+(.*?)\s*$/.test(message)) {
@@ -76,7 +76,7 @@ module.exports = ({ startTime }) => {
               if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
                 msg = require('../commands/simple')('CHARITY')
               }
-              if (message === '!collection') {
+              if (['!collection', '!keyboards', '!boards'].includes(message)) {
                 msg = require('../commands/simple')('COLLECTION')
               }
               if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
@@ -100,6 +100,9 @@ module.exports = ({ startTime }) => {
               if (message === '!subhype') {
                 msg = require('../commands/simple')('HYPE_SUB')
               }
+              if (['!keyboard', '!board'].includes(message)) {
+                msg = require('../commands/simple')('KEYBOARD')
+              }
               if (message === '!lurk') {
                 msg = require('../commands/simple')('LURK')
               }
@@ -120,6 +123,9 @@ module.exports = ({ startTime }) => {
               }
               if (['!youtube', '!yt', '!vods', '!vod'].includes(message)) {
                 msg = require('../commands/simple')('SOCIALS_YOUTUBE_VODS')
+              }
+              if (['!keeb'].includes(message)) {
+                msg = require('../commands/simple')('DISAPPROVAL')
               }
               if (message === '!commands') {
                 msg = require('../commands/simple')('COMMANDS')
