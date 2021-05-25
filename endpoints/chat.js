@@ -55,29 +55,11 @@ module.exports = ({ startTime }) => {
               if (/^\!(game|category|title)\s+(.*?)\s*$/.test(message)) {
                 msg = await require('../commands/stream-status')(username, message)
               }
-              if (message === '!socials') {
-                msg = require('../commands/simple')('SOCIALS_ALL')
-              }
-              if (message === '!instagram') {
-                msg = require('../commands/simple')('SOCIALS_IG')
-              }
-              if (message === '!twitter') {
-                msg = require('../commands/simple')('SOCIALS_TWITTER')
-              }
               if (/^\!((c|k)h?ri(s|d|z)?_?s?u(c|k|x)|rekt)/.test(message)) {
                 msg = require('../commands/chrissucks')({ username })
               }
               if (message === '!rank') {
                 msg = require('../commands/rank')({ username })
-              }
-              if (message === '!fc') {
-                msg = require('../commands/simple')('GAME_ID')
-              }
-              if (message === '!discord') {
-                msg = require('../commands/simple')('DISCORD')
-              }
-              if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
-                msg = require('../commands/simple')('CONTROLS')
               }
               if (message === '!song') {
                 msg = await require('../commands/spotify-song')()
@@ -88,8 +70,29 @@ module.exports = ({ startTime }) => {
               if (/^\!(so|shoutout)\s@?[\w]+(\s|$)/.test(message)) {
                 msg = await require('../commands/so')({ message })
               }
+              if (message.startsWith('!up')) {
+                msg = await require('../commands/uptime')()
+              }
               if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
                 msg = require('../commands/simple')('CHARITY')
+              }
+              if (message === '!collection') {
+                msg = require('../commands/simple')('COLLECTION')
+              }
+              if (['!controls', '!sensitivity', '!sens', '!motion'].includes(message)) {
+                msg = require('../commands/simple')('CONTROLS')
+              }
+              if (message === '!discord') {
+                msg = require('../commands/simple')('DISCORD')
+              }
+              if (message === '!film') {
+                msg = require('../commands/simple')('FILM')
+              }
+              if (message === '!fc') {
+                msg = require('../commands/simple')('GAME_ID')
+              }
+              if (['!gear', '!camera', '!cameras', '!cam', '!cams', '!facecam', '!lighting', '!audio', '!soldering', '!desoldering', '!joycon', '!scanning'].includes(message)) {
+                msg = require('../commands/simple')('GEAR')
               }
               if (message === '!hype') {
                 msg = require('../commands/simple')('HYPE_GAME')
@@ -106,14 +109,17 @@ module.exports = ({ startTime }) => {
               if (message === '!streampc') {
                 msg = require('../commands/simple')('PC_STREAM')
               }
-              if (message === '!film') {
-                msg = require('../commands/simple')('FILM')
+              if (message === '!socials') {
+                msg = require('../commands/simple')('SOCIALS_ALL')
               }
-              if (message === '!collection') {
-                msg = require('../commands/simple')('COLLECTION')
+              if (message === '!instagram') {
+                msg = require('../commands/simple')('SOCIALS_IG')
               }
-              if (message.startsWith('!up')) {
-                msg = await require('../commands/uptime')()
+              if (['!git', '!github'].includes(message)) {
+                msg = require('../commands/simple')('SOCIALS_GITHUB')
+              }
+              if (['!youtube', '!yt', '!vods', '!vod'].includes(message)) {
+                msg = require('../commands/simple')('SOCIALS_YOUTUBE_VODS')
               }
               if (message === '!commands') {
                 msg = require('../commands/simple')('COMMANDS')
