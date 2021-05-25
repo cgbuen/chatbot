@@ -1,7 +1,5 @@
 {
-  "BUILD": "your build",
-  "BUILD_IS_KEYBOARD": true,
-  "BUILD_NOT_KEYBOARD_MSG": "message for when build is not a keyboard",
+  "BUILD": "build detail message",
   "KEYBOARD": "active keyboard message",
   "CHARITY": "charity message",
   "COLLECTION": "collection message",

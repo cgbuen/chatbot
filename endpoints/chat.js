@@ -49,9 +49,6 @@ module.exports = ({ startTime }) => {
             if (command === 'PRIVMSG') {
               fs.appendFileSync(dateFilename, `[${moment().format()}] <${username}> ${message}\n`)
               let msg
-              if (['!build', '!specs'].includes(message)) {
-                msg = require('../commands/build')(message)
-              }
               if (/^\!(game|category|title)\s+(.*?)\s*$/.test(message)) {
                 msg = await require('../commands/stream-status')(username, message)
               }
@@ -72,6 +69,9 @@ module.exports = ({ startTime }) => {
               }
               if (message.startsWith('!up')) {
                 msg = await require('../commands/uptime')()
+              }
+              if (['!build', '!specs'].includes(message)) {
+                msg = require('../commands/simple')('BUILD')
               }
               if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
                 msg = require('../commands/simple')('CHARITY')
