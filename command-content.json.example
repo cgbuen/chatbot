@@ -19,6 +19,7 @@
   "SOCIALS_TWITTER": "twitter link",
   "SOCIALS_YOUTUBE": "youtube link",
   "SOCIALS_YOUTUBE_VODS": "secondary youtube link",
+  "WEBSITE": "website link",
   "DISAPPROVAL": "disapproval message",
   "COMMANDS": "commands list message",
   "SETTINGS_TICKER": {

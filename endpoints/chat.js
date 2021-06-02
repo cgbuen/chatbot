@@ -91,7 +91,7 @@ module.exports = ({ startTime }) => {
               if (message === '!fc') {
                 msg = require('../commands/simple')('GAME_ID')
               }
-              if (['!gear', '!camera', '!cameras', '!cam', '!cams', '!facecam', '!lighting', '!audio', '!soldering', '!desoldering', '!joycon', '!scanning'].includes(message)) {
+              if (['!gear', '!camera', '!cameras', '!cam', '!cams', '!facecam', '!microphone', '!mic', '!lavmic', '!microphones', '!mics', '!lighting', '!audio', '!soldering', '!desoldering', '!joycon', '!scanning'].includes(message)) {
                 msg = require('../commands/simple')('GEAR')
               }
               if (message === '!hype') {
@@ -118,11 +118,17 @@ module.exports = ({ startTime }) => {
               if (message === '!instagram') {
                 msg = require('../commands/simple')('SOCIALS_IG')
               }
+              if (message === '!twitter') {
+                msg = require('../commands/simple')('SOCIALS_TWITTER')
+              }
               if (['!git', '!github'].includes(message)) {
                 msg = require('../commands/simple')('SOCIALS_GITHUB')
               }
               if (['!youtube', '!yt', '!vods', '!vod'].includes(message)) {
                 msg = require('../commands/simple')('SOCIALS_YOUTUBE_VODS')
+              }
+              if (['!website', '!site'].includes(message)) {
+                msg = require('../commands/simple')('WEBSITE')
               }
               if (['!keeb'].includes(message)) {
                 msg = require('../commands/simple')('DISAPPROVAL')
