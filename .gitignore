@@ -3,5 +3,6 @@ command-content.json
 node_modules
 token-store
 twitch-logs
+alerts.json
 stats.json
 vars.js

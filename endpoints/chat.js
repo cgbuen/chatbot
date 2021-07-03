@@ -142,7 +142,7 @@ module.exports = ({ startTime }) => {
                 fs.appendFileSync(dateFilename, `[${moment().format()}] <BOT_${BOT_USER}> ${msg}\n`)
                 return chat.say(CHANNEL, msg)
               }
-            } else if (!['PONG', 'USERSTATE', 'GLOBALUSERSTATE'].includes(command)) {
+            } else if (!['PONG', 'USERSTATE', 'GLOBALUSERSTATE', 'USERNOTICE'].includes(command)) {
               // logs for joins, parts, etc.
               fs.appendFileSync(dateFilename, `[${moment().format()}] ${command} ${username} ${message || ''}\n`)
             }
