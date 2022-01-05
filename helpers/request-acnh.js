@@ -31,7 +31,8 @@ const auth = async (nintendoAccess) => {
     method: 'post',
     headers: {
       cookie: `_gtoken=${gameWebToken}`,
-      'content-type': 'application/json'
+      'content-type': 'application/json',
+      'x-blanco-version': '2.1.0'
     },
     body: JSON.stringify({
       userId
