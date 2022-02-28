@@ -55,7 +55,6 @@ module.exports = (req, res) => {
   }
 
   const data = {
-    charity,
     build,
     chrissucks,
     output_charity: `[Charity] ${charity}`,
