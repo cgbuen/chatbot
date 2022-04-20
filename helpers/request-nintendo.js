@@ -1,8 +1,12 @@
 const fetch = require('node-fetch')
+const https = require('https')
 const qs = require('qs')
 const uuid = require('uuid')
 const { TOKEN_STORE } = require('../vars')
 
+const disableCertAgent = new https.Agent({
+  rejectUnauthorized: false
+})
 const getInitialTokenCreds = async (nintendoAccess) => {
   const nintendoClientId = '71b963c1b7b6d119' // hardcoded
   const nintendoGrantType = 'urn:ietf:params:oauth:grant-type:jwt-bearer-session-token' // hardcoded
@@ -45,9 +49,11 @@ const getF = async ({ naIdToken, timestamp, requestId, iid }) => {
     body: qs.stringify({
       naIdToken,
       timestamp
-    })
+    }),
+    agent: disableCertAgent
   }
   console.log('--> Fetching hash from Eli Fessler\'s /gen2 s2s API.')
+  require("tls").DEFAULT_ECDH_CURVE = "auto"
   const rawHashResponse = await fetch('https://elifessler.com/s2s/api/gen2', requestOptionsHash)
   const hashResponse = await rawHashResponse.json()
   const hash = hashResponse.hash
@@ -60,6 +66,7 @@ const getF = async ({ naIdToken, timestamp, requestId, iid }) => {
       'x-ver': '3',
       'x-iid': iid
     },
+    agent: disableCertAgent
   }
   console.log('--> Fetching f token from Nexus\'s flapg', iid, 'API.')
   const rawFResponse = await fetch('https://flapg.com/ika2/api/login?public', requestOptionsF)
@@ -72,7 +79,7 @@ const getNintendoWebApiServerCredential = async (parameter) => {
     method: 'post',
     headers: {
       'content-type': 'application/json',
-      'x-productversion': '1.10.1',
+      'x-productversion': '1.14.0',
       'x-platform': 'Android', // must be android due to flapg
     },
     body: JSON.stringify({ parameter })
@@ -89,7 +96,7 @@ const getGameList = async (bearerToken) => {
     headers: {
       'authorization': `Bearer ${bearerToken}`,
       'content-type': 'application/json',
-      'x-productversion': '1.9.0',
+      'x-productversion': '1.14.0',
       'x-platform': 'Android', // must be android due to flapg
     }
   }
@@ -105,7 +112,7 @@ const getWebServiceToken = async (bearerToken, parameter) => {
     headers: {
       'authorization': `Bearer ${bearerToken}`,
       'content-type': 'application/json',
-      'x-productversion': '1.9.0',
+      'x-productversion': '1.14.0',
       'x-platform': 'Android', // must be android due to flapg
     },
     body: JSON.stringify({ parameter })

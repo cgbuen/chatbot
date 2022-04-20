@@ -70,6 +70,9 @@ module.exports = ({ startTime }) => {
               if (message.startsWith('!up')) {
                 msg = await require('../commands/uptime')()
               }
+              if (['!acmessage', '!acnhmessage'].includes(message)) {
+                msg = require('../commands/simple')('AC_MESSAGE')
+              }
               if (['!build', '!specs'].includes(message)) {
                 msg = require('../commands/simple')('BUILD')
               }
@@ -94,6 +97,9 @@ module.exports = ({ startTime }) => {
               if (['!gear', '!camera', '!cameras', '!cam', '!cams', '!facecam', '!microphone', '!mic', '!lavmic', '!microphones', '!mics', '!lighting', '!audio', '!soldering', '!desoldering', '!joycon', '!scanning'].includes(message)) {
                 msg = require('../commands/simple')('GEAR')
               }
+              if (['!giveaway', '!giveaways'].includes(message)) {
+                msg = require('../commands/simple')('GIVEAWAY')
+              }
               if (message === '!hype') {
                 msg = require('../commands/simple')('HYPE_GAME')
               }
@@ -103,7 +109,7 @@ module.exports = ({ startTime }) => {
               if (['!keyboard', '!board'].includes(message)) {
                 msg = require('../commands/simple')('KEYBOARD')
               }
-              if (message === '!lurk') {
+              if (message.startsWith('!lurk')) {
                 msg = require('../commands/simple')('LURK')
               }
               if (message === '!pc') {
@@ -111,6 +117,9 @@ module.exports = ({ startTime }) => {
               }
               if (message === '!streampc') {
                 msg = require('../commands/simple')('PC_STREAM')
+              }
+              if (['!plate', '!plates'].includes(message)) {
+                msg = require('../commands/simple')('PLATES')
               }
               if (message === '!socials') {
                 msg = require('../commands/simple')('SOCIALS_ALL')
@@ -127,13 +136,16 @@ module.exports = ({ startTime }) => {
               if (['!youtube', '!yt', '!vods', '!vod'].includes(message)) {
                 msg = require('../commands/simple')('SOCIALS_YOUTUBE_VODS')
               }
+              if (['!vinyl', '!records', '!discogs'].includes(message)) {
+                msg = require('../commands/simple')('VINYL')
+              }
               if (['!website', '!site'].includes(message)) {
                 msg = require('../commands/simple')('WEBSITE')
               }
               if (['!keeb'].includes(message)) {
                 msg = require('../commands/simple')('DISAPPROVAL')
               }
-              if (message === '!commands') {
+              if (['!commands', '!help'].includes(message)) {
                 msg = require('../commands/simple')('COMMANDS')
               }
               if (msg) {

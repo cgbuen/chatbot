@@ -148,19 +148,27 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
     })
     console.log('--> Beginning sequential Twitch fetches: 1. followers, 2. subs, 3-5. bits (alltime/month/week)')
     const user = (fs.readFileSync(`./${TOKEN_STORE}/twitch-data-user`, 'utf8') || '').trim()
-    const followersResponse = await api.get(`channels/${user}/follows`, {
-      version: 'kraken',
+    const followersResponse = await api.get(`users/follows`, {
+      version: 'helix',
       search: {
-        directions: 'asc',
-        limit: 5
+        to_id: user,
+        first: 5
+      },
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
       }
+
     })
-    const subscriptionsResponse = await api.get(`channels/${user}/subscriptions`, {
-      version: 'kraken',
+    const subscriptionsResponse = await api.get(`subscriptions`, {
+      version: 'helix',
       search: {
-        direction: 'desc',
-        limit: 5
+        broadcaster_id: user,
+        first: 5
+      },
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
       }
+
     })
     const bitsLeadersAlltimeResponse = await api.get('bits/leaderboard', {
       version: 'helix',

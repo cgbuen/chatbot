@@ -9,8 +9,8 @@ module.exports = async (req, res) => {
   let twitchStats
   try {
     const twitchStatsResponses = await requestTwitch.getAllStats(fs.readFileSync(`./${TOKEN_STORE}/twitch-access`, 'utf8').trim())
-    const followers = twitchStatsResponses.followersResponse.follows
-    const subs =  twitchStatsResponses.subscriptionsResponse.subscriptions
+    const followers = twitchStatsResponses.followersResponse.data
+    const subs =  twitchStatsResponses.subscriptionsResponse.data
     const bits = {
       alltime: twitchStatsResponses.bitsLeadersAlltimeResponse.data,
       month: twitchStatsResponses.bitsLeadersMonthResponse.data,
@@ -35,8 +35,8 @@ module.exports = async (req, res) => {
       subs,
       bits,
       uptime,
-      output_followers: `[Latest Followers] ${followers.map((x, i) => unbreak(`${i + 1}. ${x.user.displayName}`)).join(', ')}`,
-      output_subs: `[Newest Subscribers] ${subs.filter(x => x.user.displayName !== CHANNEL).map((x, i) => unbreak(`${i + 1}. ${x.user.displayName}`)).join(', ')}`,
+      output_followers: `[Latest Followers] ${followers.map((x, i) => unbreak(`${i + 1}. ${x.fromName}`)).join(', ')}`,
+      output_subs: `[Newest Subscribers] ${subs.filter(x => x.userName !== CHANNEL).map((x, i) => unbreak(`${i + 1}. ${x.userName}`)).join(', ')}`,
       output_bits: {
         alltime: `[Bit Leaders (All-Time)] ${bits.alltime.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).join(', ')}`,
         month: `[Bit Leaders (Month)] ${bits.month.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).join(', ') || '1. No one'}`,

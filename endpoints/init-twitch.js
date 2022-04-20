@@ -20,6 +20,8 @@ const init = async (req, res) => {
       'channel:moderate',
       'channel:read:redemptions',
       'channel:read:subscriptions',
+      'channel:read:predictions',
+      'channel:read:redemptions',
       'channel_editor',
       'channel_subscriptions',
       'chat:edit',
