@@ -136,6 +136,9 @@ module.exports = ({ startTime }) => {
               if (['!youtube', '!yt', '!vods', '!vod'].includes(message)) {
                 msg = require('../commands/simple')('SOCIALS_YOUTUBE_VODS')
               }
+              if (['!vinyl', '!records', '!discogs'].includes(message)) {
+                msg = require('../commands/simple')('VINYL')
+              }
               if (['!website', '!site'].includes(message)) {
                 msg = require('../commands/simple')('WEBSITE')
               }
