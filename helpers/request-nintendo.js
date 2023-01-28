@@ -3,6 +3,7 @@ const https = require('https')
 const qs = require('qs')
 const uuid = require('uuid')
 const { TOKEN_STORE } = require('../vars')
+const NSOAPP_VERSION = '2.1.1'
 
 const disableCertAgent = new https.Agent({
   rejectUnauthorized: false
@@ -79,7 +80,7 @@ const getNintendoWebApiServerCredential = async (parameter) => {
     method: 'post',
     headers: {
       'content-type': 'application/json',
-      'x-productversion': '1.14.0',
+      'x-productversion': NSOAPP_VERSION,
       'x-platform': 'Android', // must be android due to flapg
     },
     body: JSON.stringify({ parameter })
@@ -96,7 +97,7 @@ const getGameList = async (bearerToken) => {
     headers: {
       'authorization': `Bearer ${bearerToken}`,
       'content-type': 'application/json',
-      'x-productversion': '1.14.0',
+      'x-productversion': NSOAPP_VERSION,
       'x-platform': 'Android', // must be android due to flapg
     }
   }
@@ -112,7 +113,7 @@ const getWebServiceToken = async (bearerToken, parameter) => {
     headers: {
       'authorization': `Bearer ${bearerToken}`,
       'content-type': 'application/json',
-      'x-productversion': '1.14.0',
+      'x-productversion': NSOAPP_VERSION,
       'x-platform': 'Android', // must be android due to flapg
     },
     body: JSON.stringify({ parameter })

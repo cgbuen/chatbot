@@ -76,6 +76,9 @@ module.exports = ({ startTime }) => {
               if (['!build', '!specs'].includes(message)) {
                 msg = require('../commands/simple')('BUILD')
               }
+              if (['!cassette', '!cassettes', '!tape', '!tapedeck', '!nakamichi'].includes(message)) {
+                msg = require('../commands/simple')('CASSETTES')
+              }
               if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
                 msg = require('../commands/simple')('CHARITY')
               }
@@ -87,6 +90,9 @@ module.exports = ({ startTime }) => {
               }
               if (message === '!discord') {
                 msg = require('../commands/simple')('DISCORD')
+              }
+              if (['!dk', '!dk750ti', '!donkeykong'].includes(message)) {
+                msg = require('../commands/simple')('DK')
               }
               if (message === '!film') {
                 msg = require('../commands/simple')('FILM')
@@ -102,6 +108,12 @@ module.exports = ({ startTime }) => {
               }
               if (message === '!hype') {
                 msg = require('../commands/simple')('HYPE_GAME')
+              }
+              if (message === '!raid1') {
+                msg = require('../commands/simple')('RAID1')
+              }
+              if (message === '!raid2') {
+                msg = require('../commands/simple')('RAID2')
               }
               if (message === '!subhype') {
                 msg = require('../commands/simple')('HYPE_SUB')
@@ -133,7 +145,10 @@ module.exports = ({ startTime }) => {
               if (['!git', '!github'].includes(message)) {
                 msg = require('../commands/simple')('SOCIALS_GITHUB')
               }
-              if (['!youtube', '!yt', '!vods', '!vod'].includes(message)) {
+              if (['!youtube', '!yt'].includes(message)) {
+                msg = require('../commands/simple')('SOCIALS_YOUTUBE')
+              }
+              if (['!vods', '!vod'].includes(message)) {
                 msg = require('../commands/simple')('SOCIALS_YOUTUBE_VODS')
               }
               if (['!vinyl', '!records', '!discogs'].includes(message)) {

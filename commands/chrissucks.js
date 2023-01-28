@@ -20,6 +20,6 @@ module.exports = function chrissucks({ username }) {
   } catch (e) {
     console.log('** error parsing counter (probably) in chrissucks chat command. will not write to file. continuing with proper msg back.', e)
   }
-  const msg = 'ya'
+  const msg = `@${username} ya`
   return msg
 }
