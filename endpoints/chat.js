@@ -157,9 +157,6 @@ module.exports = ({ startTime }) => {
               if (['!website', '!site'].includes(message)) {
                 msg = require('../commands/simple')('WEBSITE')
               }
-              if (['!subathon', '!24hrstream', '!celebration'].includes(message)) {
-                msg = require('../commands/simple')('SUBATHON')
-              }
               if (['!keeb'].includes(message)) {
                 msg = require('../commands/simple')('DISAPPROVAL')
               }
