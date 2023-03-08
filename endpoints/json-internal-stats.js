@@ -7,15 +7,16 @@ module.exports = (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
 
   let build
+  let giveaway
   try {
-    const { BUILD } = JSON.parse(fs.readFileSync(`./command-content.json`))
+    const { BUILD, GIVEAWAY } = JSON.parse(fs.readFileSync(`./command-content.json`))
     build = BUILD
+    giveaway = GIVEAWAY
   } catch (e) {
     console.log('==> Could not parse command-content')
     build = 'n/a'
+    giveaway = 'n/a'
   }
-  const charity = "Donations to this channel will be sent off to the San Francisco-Marin Food Bank. You can also donate directly to them through the link at the bottom of the channel notes."
-
   let dict
   try {
     dict = JSON.parse(fs.readFileSync(`./${COUNTER}.json`))
@@ -49,16 +50,17 @@ module.exports = (req, res) => {
   }
 
   const output_chrissucks = {
-    alltime: `[!chrissucks Leaders (All-Time)] ${chrissucks.alltime.map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.count})`)).join(', ')}`,
-    month: `[!chrissucks Leaders (Month)] ${chrissucks.month.map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.count})`)).join(', ') || '1. No one' }`,
-    week: `[!chrissucks Leaders (Week)] ${chrissucks.week.map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.count})`)).join(', ') || '1. No one' }`,
+    alltime: `[All-Time] ${chrissucks.alltime.map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.count})`)).join(', ')}`,
+    month: `[Month] ${chrissucks.month.map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.count})`)).join(', ') || '1. No one' }`,
+    week: `[Week] ${chrissucks.week.map((x, i) => unbreak(`${i + 1}. ${x.name} (${x.count})`)).join(', ') || '1. No one' }`,
   }
 
   const data = {
     build,
-    chrissucks,
-    output_build: `[Build] ${build}`,
-    output_chrissucks
+    '!chrissucks': chrissucks,
+    output_build: `${build}`,
+    output_giveaway: `${giveaway}`,
+    'output_!chrissucks': output_chrissucks,
   }
   return res.send(data)
 }

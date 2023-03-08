@@ -79,7 +79,7 @@ module.exports = ({ startTime }) => {
               if (['!cassette', '!cassettes', '!tape', '!tapedeck', '!nakamichi'].includes(message)) {
                 msg = require('../commands/simple')('CASSETTES')
               }
-              if (['!charity', '!support', '!donate', '!bits', '!sub', '!subs', '!subscribe'].includes(message)) {
+              if (['!charity', '!support', '!donate'].includes(message)) {
                 msg = require('../commands/simple')('CHARITY')
               }
               if (['!collection', '!keyboards', '!boards'].includes(message)) {
