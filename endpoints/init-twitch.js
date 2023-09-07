@@ -27,6 +27,7 @@ const init = async (req, res) => {
       'chat:edit',
       'chat:read',
       'moderation:read',
+      'moderator:read:followers',
       'user:edit:broadcast',
       'whispers:edit',
       'whispers:read',

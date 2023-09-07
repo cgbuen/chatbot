@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
       subs,
       bits,
       uptime,
-      output_followers: `${followers.map((x, i) => unbreak(`${i + 1}. ${x.fromName}`)).join(', ')}`,
+      output_followers: `${followers.map((x, i) => unbreak(`${i + 1}. ${x.userName}`)).join(', ')}`,
       output_subscribers: `${subs.filter(x => x.userName !== CHANNEL).map((x, i) => unbreak(`${i + 1}. ${x.userName}`)).join(', ')}`,
       output_bits: {
         alltime: `[All-Time] ${bits.alltime.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).slice(0, 5).join(', ')}`,

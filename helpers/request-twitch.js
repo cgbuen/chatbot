@@ -148,10 +148,10 @@ const getAllStats = async (accessToken, { retries = 3 } = {}) => {
     })
     console.log('--> Beginning sequential Twitch fetches: 1. followers, 2. subs, 3-5. bits (alltime/month/week)')
     const user = (fs.readFileSync(`./${TOKEN_STORE}/twitch-data-user`, 'utf8') || '').trim()
-    const followersResponse = await api.get(`users/follows`, {
+    const followersResponse = await api.get(`channels/followers`, {
       version: 'helix',
       search: {
-        to_id: user,
+        broadcaster_id: user,
         first: 5
       },
       headers: {

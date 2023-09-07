@@ -163,6 +163,9 @@ module.exports = ({ startTime }) => {
               if (['!commands', '!help'].includes(message)) {
                 msg = require('../commands/simple')('COMMANDS')
               }
+              if (['!waru', '!warugaki', '!deez'].includes(message)) {
+                msg = require('../commands/simple')('WARUGAKI')
+              }
               if (msg) {
                 // new moment used here, in case wait time for msg construction
                 // takes long (e.g. due to await)
