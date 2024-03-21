@@ -94,11 +94,14 @@ module.exports = ({ startTime }) => {
               if (['!dk', '!dk750ti', '!donkeykong'].includes(message)) {
                 msg = require('../commands/simple')('DK')
               }
+              if (message === '!fc') {
+                msg = require('../commands/simple')('GAME_ID')
+              }
               if (message === '!film') {
                 msg = require('../commands/simple')('FILM')
               }
-              if (message === '!fc') {
-                msg = require('../commands/simple')('GAME_ID')
+              if (message === '!followage') {
+                msg = await require('../commands/followage')({ username })
               }
               if (['!gear', '!camera', '!cameras', '!cam', '!cams', '!facecam', '!microphone', '!mic', '!lavmic', '!microphones', '!mics', '!lighting', '!audio', '!soldering', '!desoldering', '!joycon', '!scanning'].includes(message)) {
                 msg = require('../commands/simple')('GEAR')
@@ -109,14 +112,11 @@ module.exports = ({ startTime }) => {
               if (message === '!hype') {
                 msg = require('../commands/simple')('HYPE_GAME')
               }
-              if (message === '!raid1') {
-                msg = require('../commands/simple')('RAID1')
+              if (['!keysets'].includes(message)) {
+                msg = require('../commands/simple')('KEYSETS')
               }
-              if (message === '!raid2') {
-                msg = require('../commands/simple')('RAID2')
-              }
-              if (message === '!subhype') {
-                msg = require('../commands/simple')('HYPE_SUB')
+              if (['!unused'].includes(message)) {
+                msg = require('../commands/simple')('KEYSETS_UNUSED')
               }
               if (['!keyboard', '!board'].includes(message)) {
                 msg = require('../commands/simple')('KEYBOARD')
@@ -132,6 +132,12 @@ module.exports = ({ startTime }) => {
               }
               if (['!plate', '!plates'].includes(message)) {
                 msg = require('../commands/simple')('PLATES')
+              }
+              if (message === '!raid1') {
+                msg = require('../commands/simple')('RAID1')
+              }
+              if (message === '!raid2') {
+                msg = require('../commands/simple')('RAID2')
               }
               if (message === '!socials') {
                 msg = require('../commands/simple')('SOCIALS_ALL')
@@ -150,6 +156,24 @@ module.exports = ({ startTime }) => {
               }
               if (['!vods', '!vod'].includes(message)) {
                 msg = require('../commands/simple')('SOCIALS_YOUTUBE_VODS')
+              }
+              if (['!store', '!merch'].includes(message)) {
+                msg = require('../commands/simple')('STORE')
+              }
+              if (message === '!subathon') {
+                msg = require('../commands/simple')('SUBATHON')
+              }
+              if (['!switches'].includes(message)) {
+                msg = require('../commands/simple')('SWITCHES')
+              }
+              if (['!ready', '!readytouse'].includes(message)) {
+                msg = require('../commands/simple')('SWITCHES_READY')
+              }
+              if (['!tune', '!tunable'].includes(message)) {
+                msg = require('../commands/simple')('SWITCHES_TUNABLE')
+              }
+              if (message === '!subhype') {
+                msg = require('../commands/simple')('HYPE_SUB')
               }
               if (['!vinyl', '!records', '!discogs'].includes(message)) {
                 msg = require('../commands/simple')('VINYL')

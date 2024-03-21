@@ -29,7 +29,9 @@ const auth = async (authCode) => {
     fs.writeFileSync(`./${TOKEN_STORE}/twitch-refresh`, data.refresh_token)
     if (!fs.existsSync(`./${TOKEN_STORE}/twitch-data-user`)) {
       console.log('--> Requesting user ID')
-      await getOwnUserId(data.access_token)
+      const ownUserId = await getUserId(BOT_USER, data.access_token)
+      console.log('--> Writing Twitch user info.')
+      fs.writeFileSync(`./${TOKEN_STORE}/twitch-data-user`, ownUserId)
     }
   } catch (e) {
     console.log('==> Request fetch error auth', e)
@@ -103,7 +105,7 @@ const lookupUser = async (accessToken, userInput, { retries = 3 } = {}) => {
   return data
 }
 
-const getOwnUserId = async (accessToken, { retries = 3 } = {}) => {
+const getUserId = async (username, accessToken, { retries = 3 } = {}) => {
   let data
   if (!retries) {
     console.log('==> Too many Twitch user ID refresh attempts error')
@@ -115,19 +117,23 @@ const getOwnUserId = async (accessToken, { retries = 3 } = {}) => {
       token: accessToken,
       username: BOT_USER
     })
-    console.log('--> Beginning Twitch user fetch to find out own user ID')
-    const users = await api.get('users', { version: 'helix', search: { login: BOT_USER } })
+    console.log('--> Beginning Twitch fetch to find out user ID')
+    const users = await api.get('users', {
+      version: 'helix',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+      },
+      search: { login: username }
+    })
     data = users.data[0].id
-    console.log('--> Writing Twitch user info.')
-    fs.writeFileSync(`./${TOKEN_STORE}/twitch-data-user`, data)
   } catch (e) {
     if (e.body.error === 'Unauthorized') {
-      console.log('==> Unauthorized getOwnUserId response data error', e)
+      console.log('==> Unauthorized getUserId response data error', e)
       const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
       data = await getAllStats(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
     } else {
       data = {
-        error: 'twitch api fetch error: getOwnUserId'
+        error: 'twitch api fetch error: getUserId'
       }
     }
   }
@@ -375,14 +381,54 @@ const setTitle = async (title, accessToken, { retries = 3 } = {}) => {
   return data
 }
 
+const getFollowAge = async (username, accessToken, { retries = 3 } = {}) => {
+  let data
+  if (!retries) {
+    console.log('==> Too many Twitch followage fetching attempts error')
+    data = { error: 'Too many followage fetching attempts.' }
+    return data
+  }
+  try {
+    const { api } = new TwitchJs({
+      token: accessToken,
+      username: BOT_USER
+    })
+    console.log('--> Beginning Twitch fetch followage', username)
+    const user = (fs.readFileSync(`./${TOKEN_STORE}/twitch-data-user`, 'utf8') || '').trim()
+    data = await api.get('channels/followers', {
+      version: 'helix',
+      headers: {
+        'client-id': TWITCH_CLIENT_ID,
+      },
+      search: {
+        broadcaster_id: user,
+        user_id: await getUserId(username, accessToken)
+      }
+    })
+  } catch (e) {
+    if (e.body && e.body.error === 'Unauthorized') {
+      console.log('==> Unauthorized followage response data error', e)
+      const twitchTokenDataUpdated = await refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
+      data = await getFollowAge(username, twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
+    } else {
+      console.log('==> Uncaught getGame error', e)
+      data = {
+        error: 'twitch api fetch error: getGame'
+      }
+    }
+  }
+  return data
+}
+
 module.exports = {
   auth,
   refresh,
   lookupUser,
-  getOwnUserId,
+  getUserId,
   getAllStats,
   getMods,
   getGame,
   setGame,
-  setTitle
+  setTitle,
+  getFollowAge
 }
