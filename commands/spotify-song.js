@@ -3,8 +3,8 @@ const requestSpotify = require('../helpers/request-spotify')
 const { TOKEN_STORE } = require('../vars')
 
 const MSGS = {
-  BROKEN_SPOTIFY: 'chatbot/spotify integration is broken lmao',
-  NOT_PLAYING: 'i\'m not playing anything on spotify rn'
+  BROKEN_SPOTIFY: 'music integration is broken lmao',
+  NOT_PLAYING: 'https://www.youtube.com/@SmoothSounds'
 }
 
 module.exports = async function song() {

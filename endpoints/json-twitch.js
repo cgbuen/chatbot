@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
         month: `[Month] ${bits.month.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).slice(0, 5).join(', ') || '1. No one'}`,
         week: `[Week] ${bits.week.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).slice(0, 5).join(', ') || '1. No one'}`,
       },
-      output_uptime: `Stream up for ${uptime}`
+      output_uptime: `Stream up for ${uptime}. Local time: ${moment().format('h:mma')}`
     }
   } catch (e) {
     console.log('==> Error receiving Twitch stats', e)

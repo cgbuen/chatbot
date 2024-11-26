@@ -97,6 +97,9 @@ module.exports = ({ startTime }) => {
               if (message === '!fc') {
                 msg = require('../commands/simple')('GAME_ID')
               }
+              if (message === '!faves') {
+                msg = require('../commands/simple')('FAVES')
+              }
               if (message === '!film') {
                 msg = require('../commands/simple')('FILM')
               }
