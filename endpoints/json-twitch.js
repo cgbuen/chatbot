@@ -35,14 +35,14 @@ module.exports = async (req, res) => {
       subs,
       bits,
       uptime,
-      output_followers: `${followers.map((x, i) => unbreak(`${i + 1}. ${x.fromName}`)).join(', ')}`,
+      output_followers: `${followers.map((x, i) => unbreak(`${i + 1}. ${x.userName}`)).join(', ')}`,
       output_subscribers: `${subs.filter(x => x.userName !== CHANNEL).map((x, i) => unbreak(`${i + 1}. ${x.userName}`)).join(', ')}`,
       output_bits: {
         alltime: `[All-Time] ${bits.alltime.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).slice(0, 5).join(', ')}`,
         month: `[Month] ${bits.month.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).slice(0, 5).join(', ') || '1. No one'}`,
         week: `[Week] ${bits.week.map((x, i) => unbreak(`${i + 1}. ${x.userName} (${x.score})`)).slice(0, 5).join(', ') || '1. No one'}`,
       },
-      output_uptime: `Stream up for ${uptime}`
+      output_uptime: `Stream up for ${uptime}. Local time: ${moment().format('h:mma')}`
     }
   } catch (e) {
     console.log('==> Error receiving Twitch stats', e)
