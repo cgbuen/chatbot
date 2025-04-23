@@ -34,14 +34,13 @@ app.get('/internal-stats.json', require('./endpoints/json-internal-stats'))
 app.get('/splatoon.json', require('./endpoints/json-splatoon'))
 app.get('/acnh.json', require('./endpoints/json-acnh'))
 app.get('/chat', require('./endpoints/chat')({ startTime }))
-app.get('/pubsub', require('./endpoints/pubsub'))
 
 app.listen(port, () => console.log(`Spotify callback API endpoint app listening on port ${port}.`))
 if (LIVE) {
   open(`${'http://localhost:3000'}${fs.existsSync(`./${TOKEN_STORE}/twitch-access`) ? '/chat' : '/init-twitch'}`)
-  setTimeout(function() {
-    open(`${'http://localhost:3000'}/pubsub`)
-  }, 8000)
+  // setTimeout(function() {
+  //   open(`${'http://localhost:3000'}/pubsub`)
+  // }, 8000)
 } else if (DEBUG_SPOTIFY) {
   open(`${'http://localhost:3000'}/spotify.json`)
 } else if (DEBUG_TWITCH) {

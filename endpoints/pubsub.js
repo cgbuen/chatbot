@@ -14,13 +14,13 @@ module.exports = async (req, res) => {
     }
 
     try {
-      const ws = new WebSocket('wss://pubsub-edge.twitch.tv')
+      const ws = new WebSocket('wss://eventsub.wss.twitch.tv/ws')
       const user = (fs.readFileSync(`./${TOKEN_STORE}/twitch-data-user`, 'utf8') || '').trim()
       const objPing = JSON.stringify({ type: 'PING' })
       const objListen = JSON.stringify({
         type: 'LISTEN',
         data: {
-          topics: [`channel-points-channel-v1.${user}`],
+          topics: ['channel.channel_points_custom_reward.add'],
           auth_token: accessToken
         }
       })
@@ -28,10 +28,10 @@ module.exports = async (req, res) => {
       ws.on('open', function() {
         console.log('--> Open cgb sockets connection')
         ws.send(objListen)
-        console.log('PING::cgb pubsub-edge.twitch.tv')
+        console.log('PING::cgb eventsub.wss.twitch.tv/ws')
         ws.send(objPing)
         setInterval(function() {
-          console.log('PING::cgb pubsub-edge.twitch.tv')
+          console.log('PING::cgb eventsub.wss.twitch.tv/ws')
           ws.send(objPing)
         }, 60*1000)
       })
@@ -40,9 +40,9 @@ module.exports = async (req, res) => {
         try {
           const parsedData = JSON.parse(data)
           if (parsedData.error === "ERR_BADAUTH") {
-            console.log('==> Request twitch pubsub error')
+            console.log('==> Request twitch eventsub error')
             if (retries) {
-              console.log('** Unauthorized pubsub response data')
+              console.log('** Unauthorized eventsub response data')
               const twitchTokenDataUpdated = await requestTwitch.refresh(fs.readFileSync(`./${TOKEN_STORE}/twitch-refresh`, 'utf8'))
               ws.close()
               return connectToPubSub(twitchTokenDataUpdated.access_token, { retries: retries - 1 }) // try again after tokens updated
@@ -68,7 +68,7 @@ module.exports = async (req, res) => {
             ws.close()
             return connectToPubSub(twitchTokenDataUpdated.access_token) // try again after tokens updated
           } else if (parsedData.type === 'PONG') {
-            console.log('PONG::cgb pubsub-edge.twitch.tv')
+            console.log('PONG::cgb eventsub.wss.twitch.tv/ws')
           }
         } catch (e) {
           console.log('error ws onmessage', e)
